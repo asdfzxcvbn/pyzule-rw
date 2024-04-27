@@ -1,0 +1,5 @@
+line-length = 78
+indent-width = 4
+
+[lint]
+select = ["E", "F"]
