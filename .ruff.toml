@@ -1,5 +1,7 @@
-line-length = 78
-indent-width = 4
+line-length = 79
+indent-width = 2
+target-version = "py312"
 
 [lint]
-select = ["E", "F"]
+select = ["W", "E", "F", "C"]
+
