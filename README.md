@@ -1,6 +1,6 @@
 # pyzule-rw / cyan
 
-rewriting [pyzule](https://github.com/asdfzxcvbn/pyzule), but actually good this time!
+rewriting [pyzule](https://github.com/asdfzxcvbn/pyzule), but actually good this time! btw.. cyan/pyzule looks best with a monospace font !! :D
 
 this is pretty much just a hobby project that i'll work on when i'm bored. pyzule in its current state is kinda ugly, but it works and i haven't really had the motivation to work on it. there really isn't any need for improvements, anyway..
 

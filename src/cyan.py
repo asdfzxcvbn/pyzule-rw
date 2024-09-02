@@ -1,7 +1,10 @@
 import os
+import sys
 from argparse import ArgumentParser
+from tempfile import TemporaryDirectory
 
 import tbhutils
+import tbhtypes
 
 
 def main(parser: ArgumentParser) -> None:
@@ -20,6 +23,16 @@ def main(parser: ArgumentParser) -> None:
   if arg_err is not None:
     parser.error(arg_err)
 
-  # verbose notices
-  if args.o
+  INPUT_IS_IPA = True if args.i.endswith(".ipa") else False
+  # OUTPUT_IS_IPA = True if args.o.endswith(".ipa") else False
+
+  with TemporaryDirectory() as tmpdir:
+    app_path, plist_path = tbhutils.get_app(args.i, tmpdir, INPUT_IS_IPA)
+    app = tbhtypes.AppBundle(app_path, plist_path)
+
+    if app.executable.is_encrypted():
+      if args.ignore_encrypted:
+        print("[?] main binary is encrypted, ignoring")
+      else:
+        sys.exit("[!] main binary is encrypted; exiting")
 

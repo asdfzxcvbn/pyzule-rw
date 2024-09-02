@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 # cyan, aka pyzule-rw; by zx, 2024
 
+import sys
 import argparse
 
 import cyan
 
 
 def main() -> None:
+  if sys.version_info < (3, 12):
+    sys.exit("[!] please upgrade to python 3.12 or higher")
+  elif sys.platform == "win32":
+    sys.exit("[!] windows is not supported")
+
   parser = argparse.ArgumentParser(
     description="cyan, an azule \"clone\" for modifying iOS apps"
   )
@@ -29,21 +35,14 @@ def main() -> None:
     "--overwrite", action="store_true",
     help="skip overwrite confirmation"
   )
+  parser.add_argument(
+    "--ignore-encrypted", action="store_true",
+    help="skip main binary encryption check"
+  )
 
   cyan.main(parser)
+
 
 if __name__ == "__main__":
   main()
 
-# INPUT = os.path.realpath(args.input)
-# WORKING_DIR = os.getcwd()
-# PZ_DIR = os.path.expanduser("~/.config/cyan")
-# changed = False
-
-# if not (INPUT.endswith(".ipa") or INPUT.endswith(".app")):
-#     sys.exit("[!] input must be a .ipa/.app")
-# elif not os.path.exists(INPUT):
-#     sys.exit("[!] input does not exist")
-# elif not args.o and (input("[<] override your input file? [y/N] ").strip()
-#                      .lower() not in ("y", "yes")):
-#     sys.exit("[!] not overriding input, missing -o")
