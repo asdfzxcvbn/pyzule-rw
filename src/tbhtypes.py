@@ -91,7 +91,7 @@ class Executable:
         continue
 
       try:
-        tweaks[bn] = shutil.copytree(path, tmpdir)
+        tweaks[bn] = shutil.copytree(path, f"{tmpdir}/{bn}")
       except NotADirectoryError:
         tweaks[bn] = shutil.copy2(path, tmpdir)
 
