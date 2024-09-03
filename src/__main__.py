@@ -5,8 +5,6 @@ import os
 import sys
 import argparse
 
-import cyan
-
 
 def main() -> None:
   if sys.version_info < (3, 12):
@@ -42,6 +40,7 @@ def main() -> None:
     help="skip main binary encryption check"
   )
 
+  import cyan
   cyan.main(parser)
 
 
