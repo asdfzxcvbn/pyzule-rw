@@ -7,6 +7,7 @@ import plistlib
 import subprocess
 from glob import glob
 from argparse import Namespace
+from importlib import resources  # type: ignore
 from typing import Optional, Any
 from tempfile import TemporaryDirectory
 
@@ -85,13 +86,15 @@ def get_app(path: str, tmpdir: str, is_ipa: bool) -> tuple[str, str]:
 def get_tools_dir() -> tuple[str, str]:
   mach = platform.machine()
   system = platform.system()
-  prefix = ""
 
   if "iPhone" in mach or "iPad" in mach:
     mach = "arm64"
-    prefix = "/var/jb"  # sorry, rootless only !!
 
-  return (f"{prefix}/opt/cyan", f"{prefix}/opt/cyan/tools/{system}/{mach}")
+  with resources.files() as files:  # type: ignore
+    return (
+      str(files),  # type: ignore
+      str(files / "tools" / system / mach)  # type: ignore
+    )
 
 
 def get_plist(path: str) -> dict[str, Any]:

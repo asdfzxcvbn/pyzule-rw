@@ -6,31 +6,23 @@ from typing import Optional
 
 import lief
 
-import tbhutils
-
-
-class AppBundle:
-  def __init__(self, path: str, plist_path: str):
-    self.path = path
-    self.plist = tbhutils.get_plist(plist_path)
-    self.executable = Executable(
-      f"{path}/{self.plist["CFBundleExecutable"]}",
-      self
-    )
+from cyan import tbhutils
 
 
 class Executable:
-  isd, td = tbhutils.get_tools_dir()
-  nt = f"{td}/install_name_tool"
-  ldid = f"{td}/ldid"
-  otool = f"{td}/otool"
+  install_dir, specific = tbhutils.get_tools_dir()
+  nt = f"{specific}/install_name_tool"
+  ldid = f"{specific}/ldid"
+  otool = f"{specific}/otool"
 
-  def __init__(self, path: str, bundle: Optional[AppBundle] = None):
+  starters = ("\t/Library/", "\t@rpath", "\t@executable_path")
+
+  def __init__(self, path: str, bundle_path: Optional[str] = None):
     if not os.path.isfile(path):
       sys.exit(f"[!] {path} does not exist (executable)")
 
     self.path = path
-    self.bundle = bundle
+    self.bundle_path = bundle_path
 
     self.bn = os.path.basename(path)
     self.inj: Optional[lief.MachO.Binary] = None
@@ -46,12 +38,12 @@ class Executable:
 
   def inject(self, tweaks: dict[str, str], tmpdir: str) -> None:
     # we only inject into the main executable
-    assert self.bundle is not None
+    assert self.bundle_path is not None
 
     has_entitlements = False
-    ENT_PATH = f"{self.bundle.path}/cyan.entitlements"
-    PLUGINS_DIR = f"{self.bundle.path}/PlugIns"
-    FRAMEWORKS_DIR = f"{self.bundle.path}/Frameworks"
+    ENT_PATH = f"{self.bundle_path}/cyan.entitlements"
+    PLUGINS_DIR = f"{self.bundle_path}/PlugIns"
+    FRAMEWORKS_DIR = f"{self.bundle_path}/Frameworks"
 
     with open(ENT_PATH, "wb") as entf:
       proc = subprocess.run(
@@ -115,11 +107,11 @@ class Executable:
       if not dbn.endswith(".dylib"):
         continue
 
-      dylib = Dylib(path)
+      dylib = Executable(path)
       dylib.fakesign()
 
       # fix dependencies
-      for dep in dylib.dependencies:
+      for dep in dylib.get_dependencies():
         for cname in (common | tweaks):
           if cname in dep:
             if cname.endswith(".framework"):
@@ -149,7 +141,7 @@ class Executable:
     for missing in needed:
       ip = f"{FRAMEWORKS_DIR}/{missing}"
       existed = tbhutils.delete_if_exists(ip, missing)
-      shutil.copytree(f"{self.isd}/extras/{missing}", ip)
+      shutil.copytree(f"{self.install_dir}/extras/{missing}", ip)
 
       if not existed:
         print(f"[*] auto-injected {missing}")
@@ -171,12 +163,12 @@ class Executable:
         self.insert_cmd(f"@rpath/{bn}/{bn[:-10]}")
         shutil.copytree(path, fpath)
       else:
-        fpath = f"{self.bundle.path}/{bn}"
+        fpath = f"{self.bundle_path}/{bn}"
         existed = tbhutils.delete_if_exists(fpath, bn)
         try:
           shutil.copytree(path, fpath)
         except NotADirectoryError:
-          shutil.copy2(path, self.bundle.path)
+          shutil.copy2(path, self.bundle_path)
 
       if not existed:
         print(f"[*] injected {bn}")
@@ -205,14 +197,6 @@ class Executable:
 
     self.inj.add(lief.MachO.DylibCommand.weak_lib(cmd))  # type: ignore
 
-
-class Dylib(Executable):
-  starters = ("\t/Library/", "\t@rpath", "\t@executable_path")
-
-  def __init__(self, path: str):
-    super().__init__(path)
-    self.dependencies = self.get_dependencies()
-
   def get_dependencies(self) -> list[str]:
     proc = subprocess.run(
       [self.otool, "-L", self.path],
@@ -231,12 +215,4 @@ class Dylib(Executable):
         deps.append(dep.split()[0])  # split() removes whitespace
 
     return deps
-
-
-class LeavingCM:
-  def __enter__(self):
-    pass
-
-  def __exit__(self, i, d, c):  # type: ignore
-    print("[*] deleting temporary directory..")
 

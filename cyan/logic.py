@@ -5,8 +5,7 @@ from subprocess import run
 from argparse import ArgumentParser
 from tempfile import TemporaryDirectory
 
-import tbhutils
-import tbhtypes
+from cyan import tbhutils, tbhtypes
 
 
 def main(parser: ArgumentParser) -> None:
@@ -46,10 +45,15 @@ def main(parser: ArgumentParser) -> None:
     # done!
     if OUTPUT_IS_IPA:
       print("[*] generating ipa..")
-      run(["bash", f"{tbhtypes.Executable.isd}/tools/compressIPA.sh"], env={
-        "TMPDIR": tmpdir,
-        "OUTPUT": args.o
-      })
+
+      run(
+        ["bash", f"{tbhtypes.Executable.install_dir}/tools/compressIPA.sh"],
+        env={
+          "TMPDIR": tmpdir,
+          "OUTPUT": args.o
+        }
+      )
+
       print(f"[*] generated ipa at {args.o}")
     else:
       # create subdirectories if necessary
