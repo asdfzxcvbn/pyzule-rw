@@ -1,5 +1,7 @@
 import os
 import sys
+import shutil
+from subprocess import run
 from argparse import ArgumentParser
 from tempfile import TemporaryDirectory
 
@@ -19,14 +21,16 @@ def main(parser: ArgumentParser) -> None:
   else:
     args.o = args.i
 
+  # this also modifies some args, like -f,
+  # to ensure there are no duplicates, etc
   arg_err = tbhutils.validate_inputs(args)
   if arg_err is not None:
     parser.error(arg_err)
 
   INPUT_IS_IPA = True if args.i.endswith(".ipa") else False
-  # OUTPUT_IS_IPA = True if args.o.endswith(".ipa") else False
+  OUTPUT_IS_IPA = True if args.o.endswith(".ipa") else False
 
-  with TemporaryDirectory() as tmpdir:
+  with TemporaryDirectory() as tmpdir, tbhtypes.LeavingCM():
     app_path, plist_path = tbhutils.get_app(args.i, tmpdir, INPUT_IS_IPA)
     app = tbhtypes.AppBundle(app_path, plist_path)
 
@@ -35,4 +39,26 @@ def main(parser: ArgumentParser) -> None:
         print("[?] main binary is encrypted, ignoring")
       else:
         sys.exit("[!] main binary is encrypted; exiting")
+
+    if args.f is not None:
+      app.executable.inject(args.f, tmpdir)
+
+    # done!
+    if OUTPUT_IS_IPA:
+      print("[*] generating ipa..")
+      run(["bash", f"{tbhtypes.Executable.isd}/tools/compressIPA.sh"], env={
+        "TMPDIR": tmpdir,
+        "OUTPUT": args.o
+      })
+      print(f"[*] generated ipa at {args.o}")
+    else:
+      # create subdirectories if necessary
+      if "/" in args.o:
+        os.makedirs(os.path.dirname(args.o), exist_ok=True)
+
+      if os.path.isdir(args.o):
+        shutil.rmtree(args.o)
+
+      shutil.move(app_path, args.o)
+      print(f"[*] generated app at {args.o}")
 

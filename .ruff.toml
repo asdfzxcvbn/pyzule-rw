@@ -3,5 +3,5 @@ indent-width = 2
 target-version = "py312"
 
 [lint]
-select = ["W", "E", "F", "C"]
+select = ["W", "E", "F"]
 

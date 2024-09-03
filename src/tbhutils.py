@@ -4,9 +4,11 @@ import shutil
 import zipfile
 import platform
 import plistlib
+import subprocess
 from glob import glob
 from argparse import Namespace
 from typing import Optional, Any
+from tempfile import TemporaryDirectory
 
 
 def validate_inputs(args: Namespace) -> Optional[str]:
@@ -20,9 +22,6 @@ def validate_inputs(args: Namespace) -> Optional[str]:
     return f"{args.i} does not exist"
 
   if os.path.exists(args.o):
-    if args.overwrite:
-      return print("[*] output already exists; will overwrite !")
-
     try:
       overwrite = input(
         f"[<] {args.o} already exists, overwrite it? [Y/n] "
@@ -37,8 +36,9 @@ def validate_inputs(args: Namespace) -> Optional[str]:
       sys.exit(0)
 
   if args.f is not None:
-    args.f = {os.path.normpath(f) for f in args.f}
-    nonexistent = [f for f in args.f if not os.path.exists(f)]
+    # dictionary ensures unique names
+    args.f = {os.path.basename(f): os.path.normpath(f) for f in args.f}
+    nonexistent = [f for f in args.f.values() if not os.path.exists(f)]
 
     if len(nonexistent) != 0:
       print("[!] please ensure the following file(s) exist:")
@@ -82,7 +82,7 @@ def get_app(path: str, tmpdir: str, is_ipa: bool) -> tuple[str, str]:
   return app, plist
 
 
-def get_tools_dir() -> str:
+def get_tools_dir() -> tuple[str, str]:
   mach = platform.machine()
   system = platform.system()
   prefix = ""
@@ -91,7 +91,7 @@ def get_tools_dir() -> str:
     mach = "arm64"
     prefix = "/var/jb"  # sorry, rootless only !!
 
-  return f"{prefix}/opt/cyan/tools/{system}/{mach}"
+  return (f"{prefix}/opt/cyan", f"{prefix}/opt/cyan/tools/{system}/{mach}")
 
 
 def get_plist(path: str) -> dict[str, Any]:
@@ -100,4 +100,50 @@ def get_plist(path: str) -> dict[str, Any]:
       return plistlib.load(f)
   except Exception:
     sys.exit(f"[!] couldn't read {path}")
+
+
+def delete_if_exists(path: str, bn: str) -> bool:
+  is_file = os.path.isfile(path)
+
+  try:
+    if is_file:
+      os.remove(path)
+    else:
+      shutil.rmtree(path)
+
+    print(f"[?] {bn} already existed, replacing")
+    return True
+  except FileNotFoundError:
+    return False
+
+
+def extract_deb(deb: str, tweaks: dict[str, str], tmpdir: str) -> None:
+  with TemporaryDirectory(prefix=tmpdir + "/", delete=False) as t2:
+    if platform.system() == "Linux":
+      tool = ["ar", "-x", deb, f"--output={t2}"]
+    else:
+      tool = ["tar", "-xf", deb, f"--directory={t2}"]
+
+    try:
+      subprocess.run(tool, check=True)
+    except Exception:
+      sys.exit(f"[!] couldn't extract {os.path.basename(deb)}")
+
+    # it's not always "data.tar.gz"
+    data_tar = glob(f"{t2}/data.*")[0]
+    subprocess.run(["tar", "-xf", data_tar, f"--directory={t2}"])
+
+    for hi in sum((
+        glob(f"{t2}/**/*.dylib", recursive=True),
+        glob(f"{t2}/**/*.bundle", recursive=True),
+        glob(f"{t2}/**/*.appex", recursive=True),
+        glob(f"{t2}/**/*.framework", recursive=True)
+    ), []):  # type: ignore
+      if os.path.islink(hi):
+        continue  # symlinks are broken iirc
+
+      tweaks[os.path.basename(hi)] = hi
+
+    print(f"[*] extracted {os.path.basename(deb)}")
+    del tweaks[deb]
 

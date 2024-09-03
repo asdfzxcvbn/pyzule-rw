@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # cyan, aka pyzule-rw; by zx, 2024
 
+import os
 import sys
 import argparse
 
@@ -12,6 +13,11 @@ def main() -> None:
     sys.exit("[!] please upgrade to python 3.12 or higher")
   elif sys.platform == "win32":
     sys.exit("[!] windows is not supported")
+  elif not (
+      os.path.isdir("/opt/cyan")
+      or os.path.isdir("/var/jb/opt/cyan")
+  ):
+    sys.exit("[!] cyan must be installed in /opt/cyan, refer to the README")
 
   parser = argparse.ArgumentParser(
     description="cyan, an azule \"clone\" for modifying iOS apps"
@@ -31,10 +37,6 @@ def main() -> None:
     help="a tweak to inject/item to be added to the bundle"
   )
 
-  parser.add_argument(
-    "--overwrite", action="store_true",
-    help="skip overwrite confirmation"
-  )
   parser.add_argument(
     "--ignore-encrypted", action="store_true",
     help="skip main binary encryption check"
