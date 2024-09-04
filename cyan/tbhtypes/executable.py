@@ -4,7 +4,10 @@ import shutil
 import subprocess
 from typing import Optional
 
-import lief
+try:
+  import lief
+except Exception:
+  pass
 
 from cyan import tbhutils
 
@@ -25,7 +28,7 @@ class Executable:
     self.bundle_path = bundle_path
 
     self.bn = os.path.basename(path)
-    self.inj: Optional[lief.MachO.Binary] = None
+    self.inj: Optional = None  # type: ignore
 
     if self.specific.endswith("iOS"):
       self.inj_func = self.ios_inject
@@ -178,8 +181,8 @@ class Executable:
         print(f"[*] injected {bn}")
 
     # FINALLY !!
-    if self.inj is not None:
-      self.inj.write(self.path)
+    if self.inj is not None:  # type: ignore
+      self.inj.write(self.path)  # type: ignore
 
     if has_entitlements:
       subprocess.run(["ldid", f"-S{ENT_PATH}", self.path])
@@ -196,8 +199,12 @@ class Executable:
     subprocess.run([self.nt, "-change", old, new, self.path])
 
   def insert_cmd(self, cmd: str) -> None:
-    if self.inj is None:
-      lief.logging.disable()
+    if self.inj is None:  # type: ignore
+      try:
+        lief.logging.disable()  # type: ignore
+      except Exception:
+        sys.exit("[!] did you forget to install lief?")
+
       self.inj = lief.parse(self.path)  # type: ignore
 
     self.inj.add(lief.MachO.DylibCommand.weak_lib(cmd))  # type: ignore
