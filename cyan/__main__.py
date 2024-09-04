@@ -6,9 +6,7 @@ import argparse
 
 
 def main() -> None:
-  if sys.version_info < (3, 12):
-    sys.exit("[!] please upgrade to python 3.12 or higher")
-  elif sys.platform == "win32":
+  if sys.platform == "win32":
     sys.exit("[!] windows is not supported")
 
   parser = argparse.ArgumentParser(
