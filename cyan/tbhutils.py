@@ -88,7 +88,7 @@ def get_tools_dir() -> tuple[str, str]:
   system = platform.system()
 
   if "iPhone" in mach or "iPad" in mach:
-    mach = "arm64"
+    mach = "iOS"
 
   with resources.files() as files:  # type: ignore
     return (

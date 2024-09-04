@@ -27,13 +27,17 @@ class Executable:
     self.bn = os.path.basename(path)
     self.inj: Optional[lief.MachO.Binary] = None
 
+    if self.specific.endswith("iOS"):
+      self.inj_func = self.ios_inject
+    else:
+      self.inj_func = self.insert_cmd
+
   def is_encrypted(self) -> bool:
     proc = subprocess.run(
       [self.otool, "-l", self.path],
       capture_output=True
     )
 
-    # print(proc.stdout)
     return b"cryptid 1" in proc.stdout
 
   def inject(self, tweaks: dict[str, str], tmpdir: str) -> None:
@@ -155,12 +159,12 @@ class Executable:
       elif bn.endswith(".dylib"):
         fpath = f"{FRAMEWORKS_DIR}/{bn}"
         existed = tbhutils.delete_if_exists(fpath, bn)
-        self.insert_cmd(f"@rpath/{bn}")
+        self.inj_func(f"@rpath/{bn}")
         shutil.copy2(path, FRAMEWORKS_DIR)
       elif bn.endswith(".framework"):
         fpath = f"{FRAMEWORKS_DIR}/{bn}"
         existed = tbhutils.delete_if_exists(fpath, bn)
-        self.insert_cmd(f"@rpath/{bn}/{bn[:-10]}")
+        self.inj_func(f"@rpath/{bn}/{bn[:-10]}")
         shutil.copytree(path, fpath)
       else:
         fpath = f"{self.bundle_path}/{bn}"
@@ -193,9 +197,19 @@ class Executable:
 
   def insert_cmd(self, cmd: str) -> None:
     if self.inj is None:
+      lief.logging.disable()
       self.inj = lief.parse(self.path)  # type: ignore
 
     self.inj.add(lief.MachO.DylibCommand.weak_lib(cmd))  # type: ignore
+
+  def ios_inject(self, cmd: str) -> None:
+    subprocess.run(
+      [
+        f"{self.specific}/insert_dylib",
+        "--weak", "--inplace", "--no-strip-codesig", "--all-yes",
+        cmd, self.path
+      ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
 
   def get_dependencies(self) -> list[str]:
     proc = subprocess.run(

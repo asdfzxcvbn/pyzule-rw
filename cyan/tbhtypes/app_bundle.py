@@ -8,7 +8,7 @@ class AppBundle:
     self.plist = get_plist(plist_path)
 
     self.executable = Executable(
-      f"{path}/{self.plist["CFBundleExecutable"]}",
+      f"{path}/{self.plist['CFBundleExecutable']}",
       path
     )
 
