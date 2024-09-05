@@ -148,5 +148,5 @@ def extract_deb(deb: str, tweaks: dict[str, str], tmpdir: str) -> None:
       tweaks[os.path.basename(hi)] = hi
 
     print(f"[*] extracted {os.path.basename(deb)}")
-    del tweaks[deb]
+    del tweaks[os.path.basename(deb)]
 
