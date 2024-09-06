@@ -16,6 +16,7 @@ more coming soon! i'm trying to copy pyzule in order to deprecate it in favor of
 - remove UISupportedDevices
 - remove watch app
 - fakesign the output ipa/app
+- thin all binaries to arm64, it can LARGELY reduce app size sometimes!
 
 ## notes
 

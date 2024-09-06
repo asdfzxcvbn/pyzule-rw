@@ -193,13 +193,10 @@ class Executable:
     return True
 
   def thin(self) -> bool:
-    if subprocess.run(
-        [self.lipo, "-thin", "arm64", self.path, "-output", self.path],
-        stderr=subprocess.DEVNULL
-    ).returncode == 0:
-      return True
-
-    return False
+    return subprocess.run(
+      [self.lipo, "-thin", "arm64", self.path, "-output", self.path],
+      stderr=subprocess.DEVNULL
+    ).returncode == 0
 
   def change_dependency(self, old: str, new: str) -> None:
     subprocess.run([self.nt, "-change", old, new, self.path])
