@@ -11,7 +11,7 @@ this is pretty much just a hobby project that i'll work on when i'm bored. pyzul
 more coming soon! i'm trying to copy pyzule in order to deprecate it in favor of cyan, which is 1000x better
 
 - inject deb, dylib, framework, bundle, and appex files/folders
-- automatically fix dependencies on CydiaSubstrate (cyan uses ElleKit!), Cephei*, and Orion
+- automatically fix dependencies on CydiaSubstrate **(cyan uses [ElleKit](https://github.com/evelyneee/ellekit/)!)**, Cephei*, and Orion
 - copy any unknown file/folder types to app root
 - remove UISupportedDevices
 - remove watch app
