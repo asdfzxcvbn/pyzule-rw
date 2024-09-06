@@ -12,9 +12,5 @@ cyan is pretty much "v1.0" now i guess. injection works and is stable, and iOS (
 
 so to reaffirm this, **iOS is currently not supported until an updated python for iOS gets released**
 
-to install on linux + macos, make sure you have python 3.9 or later, `bash`, `zip`, and `lief`
-
-to install lief: `pip install lief`
-
-then, to install cyan (remember, this is KINDA a beta i guess): `pip install git+https://github.com/asdfzxcvbn/pyzule-rw.git#egg=cyan`
+easiest install ever, just `pip install -U git+https://github.com/asdfzxcvbn/pyzule-rw.git#egg=cyan`
 

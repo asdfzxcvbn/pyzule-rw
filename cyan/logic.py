@@ -1,7 +1,6 @@
 import os
 import sys
 import shutil
-from subprocess import run
 from argparse import ArgumentParser
 from tempfile import TemporaryDirectory
 
