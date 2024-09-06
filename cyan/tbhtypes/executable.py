@@ -126,7 +126,7 @@ class Executable:
             else:
               npath = f"@rpath/{cname}"
 
-            self.change_dependency(dep, npath)
+            dylib.change_dependency(dep, npath)
             if cname in common:
               needed.add(cname)
 
