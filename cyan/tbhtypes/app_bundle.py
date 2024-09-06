@@ -1,5 +1,6 @@
 import os
 import shutil
+from glob import glob
 
 from .executable import Executable
 from .plist import Plist
@@ -37,3 +38,20 @@ class AppBundle:
     else:
       print("[?] watch app not present")
 
+  def fakesign_all(self) -> None:
+    self.executable.fakesign()
+    count = 1
+
+    for ts in sum((
+        glob(f"{self.path}/**/*.appex", recursive=True),
+        glob(f"{self.path}/**/*.framework", recursive=True)
+    ), []):  # type: ignore
+      pl = Plist(f"{ts}/Info.plist")
+      Executable(f"{ts}/{pl['CFBundleExecutable']}").fakesign()
+      count += 1
+
+    for ts in glob(f"{self.path}/**/*.dylib", recursive=True):
+      Executable(ts).fakesign()
+      count += 1
+
+    print(f"[*] fakesigned \033[96m{count}\033[0m items")

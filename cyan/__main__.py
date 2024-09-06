@@ -39,6 +39,10 @@ def main() -> None:
     "-d", "--enable-documents", action="store_true",
     help="enable documents support"
   )
+  parser.add_argument(
+    "-s", "--fakesign", action="store_true",
+    help="fakesign all binaries for use with appsync/trollstore"
+  )
 
   parser.add_argument(
     "-c", "--compress", metavar="level", type=int, default=6,
