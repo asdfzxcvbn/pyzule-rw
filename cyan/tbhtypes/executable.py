@@ -199,7 +199,10 @@ class Executable:
     ).returncode == 0
 
   def change_dependency(self, old: str, new: str) -> None:
-    subprocess.run([self.nt, "-change", old, new, self.path])
+    subprocess.run(
+      [self.nt, "-change", old, new, self.path],
+      stderr=subprocess.DEVNULL
+    )
 
   def insert_cmd(self, cmd: str) -> None:
     if self.inj is None:  # type: ignore
