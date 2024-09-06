@@ -28,8 +28,17 @@ def main() -> None:
   )
 
   parser.add_argument(
+    "-c", "--compress", metavar="level", type=int, default=6,
+    help="the compression level of the ipa (0-9, defaults to 6)",
+    action="store", choices=range(0, 10)
+  )
+  parser.add_argument(
     "--ignore-encrypted", action="store_true",
     help="skip main binary encryption check"
+  )
+
+  parser.add_argument(
+    "-v", "--version", action="version", version="cyan v1.0b"
   )
 
   from cyan import logic

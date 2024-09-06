@@ -42,24 +42,16 @@ def main(parser: ArgumentParser) -> None:
     if args.f is not None:
       app.executable.inject(args.f, tmpdir)
 
-    # done!
-    if OUTPUT_IS_IPA:
-      print("[*] generating ipa..")
-
-      run(
-        ["bash", f"{tbhtypes.Executable.install_dir}/tools/compressIPA.sh"],
-        env={
-          "TMPDIR": tmpdir,
-          "OUTPUT": args.o
-        }
-      )
-
-      print(f"[*] generated ipa at {args.o}")
-    else:
-      # create subdirectories if necessary
-      if "/" in args.o:
+    # create subdirectories if necessary
+    if "/" in args.o:
         os.makedirs(os.path.dirname(args.o), exist_ok=True)
 
+    # done !
+    if OUTPUT_IS_IPA:
+      print("[*] generating ipa..")
+      tbhutils.make_ipa(tmpdir, args.o, args.compress)
+      print(f"[*] generated ipa at {args.o}")
+    else:
       if os.path.isdir(args.o):
         shutil.rmtree(args.o)
 

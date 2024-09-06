@@ -5,7 +5,7 @@ import zipfile
 import platform
 import plistlib
 import subprocess
-from glob import glob
+from glob import glob, iglob
 from argparse import Namespace
 from importlib import resources  # type: ignore
 from typing import Optional, Any
@@ -149,4 +149,15 @@ def extract_deb(deb: str, tweaks: dict[str, str], tmpdir: str) -> None:
 
     print(f"[*] extracted {os.path.basename(deb)}")
     del tweaks[os.path.basename(deb)]
+
+
+def make_ipa(tmpdir: str, output: str, level: int) -> None:
+  # ensure names are written as Payload/...
+  os.chdir(tmpdir)
+
+  with zipfile.ZipFile(
+      output, "w", zipfile.ZIP_DEFLATED, compresslevel=level
+  ) as zf:
+    for f in iglob("Payload/**", recursive=True):
+      zf.write(f)
 

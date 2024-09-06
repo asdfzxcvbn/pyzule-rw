@@ -10,6 +10,8 @@ this is pretty much just a hobby project that i'll work on when i'm bored. pyzul
 
 cyan is pretty much "v1.0" now i guess. injection works and is stable, and iOS (should..) have all the right fixes for running cyan, however a bug in python3.9 from procursus prevents it from running.
 
+so to reaffirm this, **iOS is currently not supported until an updated python for iOS gets released**
+
 to install on linux + macos, make sure you have python 3.9 or later, `bash`, `zip`, and `lief`
 
 to install lief: `pip install lief`
