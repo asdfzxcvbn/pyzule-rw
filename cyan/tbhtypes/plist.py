@@ -15,6 +15,10 @@ class Plist:
   def __getitem__(self, key: str) -> Any:
     return self.data.get(key, None)
 
+  def save(self) -> None:
+    with open(self.path, "w") as f:
+      plistlib.dump(self.data, f)
+
   def remove(self, key: str) -> bool:
     try:
       del self.data[key]
@@ -24,7 +28,8 @@ class Plist:
 
   def remove_uisd(self) -> None:
     if self.remove("UISupportedDevices"):
-      print("[*] removed UISupportedDevices")
+      self.save()
+      print("[*] removed UISupportedDevices") 
     else:
       print("[?] no UISupportedDevices")
 
