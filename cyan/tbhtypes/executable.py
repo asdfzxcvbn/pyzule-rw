@@ -102,11 +102,11 @@ class Executable:
       # CydiaSubstrate.framework, libsubstrate.dylib, CydiaSubstrate.dylib
       # and probably even more. it's crazy.
 
-      "ubstrate.": "CydiaSubstrate",
-      "Orion.framework": "Orion",
-      "Cephei.framework": "Cephei",
-      "CepheiUI.framework": "CepheiUI",
-      "CepheiPrefs.framework": "CepheiPrefs"
+      "substrate.": "CydiaSubstrate.framework",
+      "Orion.framework": "Orion.framework",
+      "Cephei.framework": "Cephei.framework",
+      "CepheiUI.framework": "CepheiUI.framework",
+      "CepheiPrefs.framework": "CepheiPrefs.framework"
     }
 
     # another loop for fixing dylib dependencies
@@ -119,39 +119,34 @@ class Executable:
 
       # fix dependencies
       for dep in dylib.get_dependencies():
-        for cname in (common | tweaks):
+        for cname in (tweaks | common):
           if cname in dep:
+            # i wonder if there's a better way to do this?
             if cname.endswith(".framework"):
               npath = f"@rpath/{cname}/{cname[:-10]}"
             else:
               npath = f"@rpath/{cname}"
 
-            dylib.change_dependency(dep, npath)
             if cname in common:
               needed.add(cname)
 
-            # avoid printing that we "fixed" something to itself lol
             if dep != npath:
+              dylib.change_dependency(dep, npath)
               print(f"[*] fixed dependency in {dbn}: {dep} -> {npath}")
 
-    ## "sub"-loop, just adding the needed common deps
-    if "ubstrate." in needed:
-      del common["ubstrate."]  # lol rip
-      common["CydiaSubstrate.framework"] = "CydiaSubstrate"
-
-      needed.remove("ubstrate.")
-      needed.add("CydiaSubstrate.framework")
-
+    # orion has a *weak* dependency to substrate,
+    # but will still crash without it. nice !!!!!!!!!!!
     if "Orion.framework" in needed:
-      needed.add("CydiaSubstrate.framework")
+      needed.add("substrate.")
 
     for missing in needed:
-      ip = f"{FRAMEWORKS_DIR}/{missing}"
-      existed = tbhutils.delete_if_exists(ip, missing)
-      shutil.copytree(f"{self.install_dir}/extras/{missing}", ip)
+      real = common[missing]  # "real" name, thanks substrate!
+      ip = f"{FRAMEWORKS_DIR}/{real}"
+      existed = tbhutils.delete_if_exists(ip, real)
+      shutil.copytree(f"{self.install_dir}/extras/{real}", ip)
 
       if not existed:
-        print(f"[*] auto-injected {missing}")
+        print(f"[*] auto-injected {real}")
 
     # and FINALLY, one for actually injecting
     for bn, path in tweaks.items():
