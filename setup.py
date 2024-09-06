@@ -7,7 +7,7 @@ setup(
   author="zx",
   author_email="hi@zxcvbn.fyi",
   packages=["cyan", "cyan.tbhtypes"],
-  install_requires=["lief"],
+  # install_requires=["lief"],
   python_requires=">=3.10",
   include_package_data=True,
   entry_points={

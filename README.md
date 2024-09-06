@@ -12,7 +12,9 @@ cyan is pretty much "v1.0" now i guess. injection works and is stable, and iOS (
 
 so to reaffirm this, **iOS is currently not supported until an updated python for iOS gets released**
 
-easiest install ever, just `pip install -U git+https://github.com/asdfzxcvbn/pyzule-rw.git#egg=cyan`
+**if you want to inject dylibs,** make sure you install lief (you only have to do this once): `pip install -U lief`
+
+to install or update cyan, just `pip install --force-reinstall git+https://github.com/asdfzxcvbn/pyzule-rw.git#egg=cyan`
 
 ## todo
 
