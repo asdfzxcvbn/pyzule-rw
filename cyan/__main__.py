@@ -35,6 +35,10 @@ def main() -> None:
     "-w", "--no-watch", action="store_true",
     help="remove all watch apps"
   )
+  parser.add_argument(
+    "-d", "--enable-documents", action="store_true",
+    help="enable documents support"
+  )
 
   parser.add_argument(
     "-c", "--compress", metavar="level", type=int, default=6,

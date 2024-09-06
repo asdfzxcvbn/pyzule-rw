@@ -45,6 +45,8 @@ def main(parser: ArgumentParser) -> None:
       app.plist.remove_uisd()
     if args.no_watch:
       app.remove_watch_apps()
+    if args.enable_documents:
+      app.plist.enable_documents()
 
     # create subdirectories if necessary
     if "/" in args.o:

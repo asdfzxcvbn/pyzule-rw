@@ -26,10 +26,27 @@ class Plist:
     except KeyError:
       return False
 
+  def change(self, key: str, val: Any) -> bool:
+    try:
+      if self[key] == val:
+        return False
+    except KeyError:
+      self[key] = val
+      return True
+
   def remove_uisd(self) -> None:
     if self.remove("UISupportedDevices"):
       self.save()
-      print("[*] removed UISupportedDevices") 
+      print("[*] removed UISupportedDevices")
     else:
       print("[?] no UISupportedDevices")
 
+  def enable_documents(self) -> None:
+    c1 = self.change("UISupportsDocumentBrowser", True)
+    c2 = self.change("UIFileSharingEnabled", True)
+
+    if c1 or c2:
+      self.save()
+      print("[*] enabled documents support")
+    else:
+      print("[?] documents support was already enabled")
