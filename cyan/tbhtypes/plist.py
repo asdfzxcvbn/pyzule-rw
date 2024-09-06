@@ -15,8 +15,11 @@ class Plist:
   def __getitem__(self, key: str) -> Any:
     return self.data.get(key, None)
 
+  def __setitem__(self, key: str, val: Any) -> None:
+    self.data[key] = val
+
   def save(self) -> None:
-    with open(self.path, "w") as f:
+    with open(self.path, "wb") as f:
       plistlib.dump(self.data, f)
 
   def remove(self, key: str) -> bool:
@@ -32,7 +35,8 @@ class Plist:
         return False
     except KeyError:
       self[key] = val
-      return True
+
+    return True
 
   def remove_uisd(self) -> None:
     if self.remove("UISupportedDevices"):
