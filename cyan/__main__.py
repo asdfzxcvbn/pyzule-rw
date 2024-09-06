@@ -43,6 +43,10 @@ def main() -> None:
     "-s", "--fakesign", action="store_true",
     help="fakesign all binaries for use with appsync/trollstore"
   )
+  parser.add_argument(
+    "-q", "--thin", action="store_true",
+    help="thin all binaries to arm64, may largely reduce size"
+  )
 
   parser.add_argument(
     "-c", "--compress", metavar="level", type=int, default=6,
@@ -52,6 +56,10 @@ def main() -> None:
   parser.add_argument(
     "--ignore-encrypted", action="store_true",
     help="skip main binary encryption check"
+  )
+  parser.add_argument(
+    "--overwrite", action="store_true",
+    help="overwrite existing files without confirming"
   )
 
   parser.add_argument(

@@ -22,18 +22,21 @@ def validate_inputs(args: Namespace) -> Optional[str]:
     return f"{args.i} does not exist"
 
   if os.path.exists(args.o):
-    try:
-      overwrite = input(
-        f"[<] {args.o} already exists, overwrite it? [Y/n] "
-        if args.output is not None
-        else "[<] no output was specified. overwrite the input? [Y/n] "
-      ).strip().lower()
-    except KeyboardInterrupt:
-      sys.exit("[>] bye!")
+    if args.overwrite:
+      print(f"[*] {args.o} already exists; overwriting")
+    else:
+      try:
+        overwrite = input(
+          f"[<] {args.o} already exists, overwrite it? [Y/n] "
+          if args.output is not None
+          else "[<] no output was specified. overwrite the input? [Y/n] "
+        ).strip().lower()
+      except KeyboardInterrupt:
+        sys.exit("[>] bye!")
 
-    if overwrite not in ("y", "yes", ""):
-      print("[>] quitting.")
-      sys.exit(0)
+      if overwrite not in ("y", "yes", ""):
+        print("[>] quitting.")
+        sys.exit(0)
 
   if args.f is not None:
     # dictionary ensures unique names

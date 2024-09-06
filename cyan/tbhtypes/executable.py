@@ -16,6 +16,7 @@ class Executable:
   install_dir, specific = tbhutils.get_tools_dir()
   nt = f"{specific}/install_name_tool"
   ldid = f"{specific}/ldid"
+  lipo = f"{specific}/lipo"
   otool = f"{specific}/otool"
 
   starters = ("\t/Library/", "\t@rpath", "\t@executable_path")
@@ -183,12 +184,22 @@ class Executable:
       subprocess.run(["ldid", f"-S{ENT_PATH}", self.path])
       print("[*] restored entitlements")
 
-  def fakesign(self, keep_entitlements: bool = True) -> None:
+  def fakesign(self, keep_entitlements: bool = True) -> bool:
     cmd = [self.ldid, "-S"]
     if keep_entitlements:
       cmd.append("-M")
 
     subprocess.run(cmd + [self.path])
+    return True
+
+  def thin(self) -> bool:
+    if subprocess.run(
+        [self.lipo, "-thin", "arm64", self.path, "-output", self.path],
+        stderr=subprocess.DEVNULL
+    ).returncode == 0:
+      return True
+
+    return False
 
   def change_dependency(self, old: str, new: str) -> None:
     subprocess.run([self.nt, "-change", old, new, self.path])

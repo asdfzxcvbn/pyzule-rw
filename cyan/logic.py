@@ -49,6 +49,8 @@ def main(parser: ArgumentParser) -> None:
       app.plist.enable_documents()
     if args.fakesign:
       app.fakesign_all()
+    if args.thin:
+      app.thin_all()
 
     # create subdirectories if necessary
     if "/" in args.o:
@@ -56,7 +58,7 @@ def main(parser: ArgumentParser) -> None:
 
     # done !
     if OUTPUT_IS_IPA:
-      print("[*] generating ipa..")
+      print(f"[*] generating ipa with compression level {args.compress}..")
       tbhutils.make_ipa(tmpdir, args.o, args.compress)
       print(f"[*] generated ipa at {args.o}")
     else:

@@ -54,3 +54,4 @@ class Plist:
       print("[*] enabled documents support")
     else:
       print("[?] documents support was already enabled")
+
