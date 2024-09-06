@@ -18,7 +18,7 @@ easiest install ever, just `pip install -U git+https://github.com/asdfzxcvbn/pyz
 
 [] refactor: dont prepare, just copy and fix as you go
 
-[] feat: plist operations (-u, -n, -v, -b, -m, -d, -l, -r)
+[1] feat: plist operations (-u, -n, -v, -b, -m, -d, -l, -r)
 
 [x] feat: remove watch app
 
@@ -27,4 +27,6 @@ easiest install ever, just `pip install -U git+https://github.com/asdfzxcvbn/pyz
 [] feat: thin binaries
 
 [] feat: plugin operations (-q, -e)
+
+[] feat: .cyan files (lol rip .pyzule files)
 

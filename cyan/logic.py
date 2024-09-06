@@ -41,6 +41,8 @@ def main(parser: ArgumentParser) -> None:
     if args.f is not None:
       app.executable.inject(args.f, tmpdir)
 
+    if args.remove_supported_devices:
+      app.plist.remove_uisd()
     if args.no_watch:
       app.remove_watch_apps()
 

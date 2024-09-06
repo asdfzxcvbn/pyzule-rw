@@ -1,14 +1,13 @@
 import os
 import shutil
 
-from cyan.tbhutils import get_plist
 from .executable import Executable
-
+from .plist import Plist
 
 class AppBundle:
   def __init__(self, path: str, plist_path: str):
     self.path = path
-    self.plist = get_plist(plist_path)
+    self.plist = Plist(plist_path)
 
     self.executable = Executable(
       f"{path}/{self.plist['CFBundleExecutable']}",

@@ -28,6 +28,10 @@ def main() -> None:
   )
 
   parser.add_argument(
+    "-u", "--remove-supported-devices", action="store_true",
+    help="remove UISupportedDevices"
+  )
+  parser.add_argument(
     "-w", "--no-watch", action="store_true",
     help="remove all watch apps"
   )

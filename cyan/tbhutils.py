@@ -3,12 +3,11 @@ import sys
 import shutil
 import zipfile
 import platform
-import plistlib
 import subprocess
+from typing import Optional
 from glob import glob, iglob
 from argparse import Namespace
 from importlib import resources  # type: ignore
-from typing import Optional, Any
 from tempfile import TemporaryDirectory
 
 
@@ -95,14 +94,6 @@ def get_tools_dir() -> tuple[str, str]:
       str(files),  # type: ignore
       str(files / "tools" / system / mach)  # type: ignore
     )
-
-
-def get_plist(path: str) -> dict[str, Any]:
-  try:
-    with open(path, "rb") as f:
-      return plistlib.load(f)
-  except Exception:
-    sys.exit(f"[!] couldn't read {path}")
 
 
 def delete_if_exists(path: str, bn: str) -> bool:
