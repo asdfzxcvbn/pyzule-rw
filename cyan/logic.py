@@ -41,6 +41,9 @@ def main(parser: ArgumentParser) -> None:
     if args.f is not None:
       app.executable.inject(args.f, tmpdir)
 
+    if args.no_watch:
+      app.remove_watch_apps()
+
     # create subdirectories if necessary
     if "/" in args.o:
         os.makedirs(os.path.dirname(args.o), exist_ok=True)

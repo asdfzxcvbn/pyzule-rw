@@ -14,3 +14,12 @@ so to reaffirm this, **iOS is currently not supported until an updated python fo
 
 easiest install ever, just `pip install -U git+https://github.com/asdfzxcvbn/pyzule-rw.git#egg=cyan`
 
+## todo
+
+[] refactor: dont prepare, just copy and fix as you go
+[] feat: plist operations (-u, -n, -v, -b, -m, -d, -l, -r)
+[x] feat: remove watch app
+[] feat: fakesign
+[] feat: thin binaries
+[] feat: plugin operations (-q, -e)
+

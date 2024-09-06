@@ -28,6 +28,11 @@ def main() -> None:
   )
 
   parser.add_argument(
+    "-w", "--no-watch", action="store_true",
+    help="remove all watch apps"
+  )
+
+  parser.add_argument(
     "-c", "--compress", metavar="level", type=int, default=6,
     help="the compression level of the ipa (0-9, defaults to 6)",
     action="store", choices=range(0, 10)
