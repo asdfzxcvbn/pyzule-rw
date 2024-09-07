@@ -20,6 +20,17 @@ class Executable:
   otool = f"{specific}/otool"
 
   starters = ("\t/Library/", "\t@rpath", "\t@executable_path")
+  common = {
+    # substrate could show up as
+    # CydiaSubstrate.framework, libsubstrate.dylib, EVEN CydiaSubstrate.dylib
+    # AND PROBABLY EVEN MORE !!!! IT'S CRAZY.
+
+    "substrate.": "CydiaSubstrate.framework",
+    "Orion.framework": "Orion.framework",
+    "Cephei.framework": "Cephei.framework",
+    "CepheiUI.framework": "CepheiUI.framework",
+    "CepheiPrefs.framework": "CepheiPrefs.framework"
+  }
 
   def __init__(self, path: str, bundle_path: Optional[str] = None):
     if not os.path.isfile(path):
@@ -83,83 +94,26 @@ class Executable:
         stderr=subprocess.DEVNULL
       )
 
-    # need ~~two~~ THREE loops, one for copying all files to tmpdir
-    print("[*] preparing; this may take a while, sorry")
+    # `extract_deb()` will modify `tweaks`, which is why we make a copy
     for bn, path in dict(tweaks).items():
       if bn.endswith(".deb"):
         tbhutils.extract_deb(path, tweaks, tmpdir)
         continue
 
-      try:
-        tweaks[bn] = shutil.copytree(path, f"{tmpdir}/{bn}")
-      except NotADirectoryError:
-        tweaks[bn] = shutil.copy2(path, tmpdir)
-
-      # print(f"[*] prepared {bn}")
-
     needed: set[str] = set()
-    common = {
-      # substrate could show up as
-      # CydiaSubstrate.framework, libsubstrate.dylib, CydiaSubstrate.dylib
-      # and probably even more. it's crazy.
-
-      "substrate.": "CydiaSubstrate.framework",
-      "Orion.framework": "Orion.framework",
-      "Cephei.framework": "Cephei.framework",
-      "CepheiUI.framework": "CepheiUI.framework",
-      "CepheiPrefs.framework": "CepheiPrefs.framework"
-    }
-
-    # another loop for fixing dylib dependencies
-    for dbn, path in tweaks.items():
-      if not dbn.endswith(".dylib"):
-        continue
-
-      dylib = Executable(path)
-      dylib.fakesign()
-
-      # fix dependencies
-      for dep in dylib.get_dependencies():
-        for cname in (tweaks | common):
-          if cname in dep:
-            # i wonder if there's a better way to do this?
-            if cname.endswith(".framework"):
-              npath = f"@rpath/{cname}/{cname[:-10]}"
-            else:
-              npath = f"@rpath/{cname}"
-
-            if cname in common:
-              needed.add(cname)
-
-            if dep != npath:
-              dylib.change_dependency(dep, npath)
-              print(f"[*] fixed dependency in {dbn}: {dep} -> {npath}")
-
-    # orion has a *weak* dependency to substrate,
-    # but will still crash without it. nice !!!!!!!!!!!
-    if "Orion.framework" in needed:
-      needed.add("substrate.")
-
-    for missing in needed:
-      real = common[missing]  # "real" name, thanks substrate!
-      ip = f"{FRAMEWORKS_DIR}/{real}"
-      existed = tbhutils.delete_if_exists(ip, real)
-      shutil.copytree(f"{self.install_dir}/extras/{real}", ip)
-
-      if not existed:
-        print(f"[*] auto-injected {real}")
-
-    # and FINALLY, one for actually injecting
     for bn, path in tweaks.items():
       if bn.endswith(".appex"):
         fpath = f"{PLUGINS_DIR}/{bn}"
         existed = tbhutils.delete_if_exists(fpath, bn)
         shutil.copytree(path, fpath)
       elif bn.endswith(".dylib"):
+        path = shutil.copy2(path, tmpdir)
+        Executable(path).fix_dependencies(tweaks, needed)
+
         fpath = f"{FRAMEWORKS_DIR}/{bn}"
         existed = tbhutils.delete_if_exists(fpath, bn)
         self.inj_func(f"@rpath/{bn}")
-        shutil.copy2(path, FRAMEWORKS_DIR)
+        shutil.move(path, FRAMEWORKS_DIR)
       elif bn.endswith(".framework"):
         fpath = f"{FRAMEWORKS_DIR}/{bn}"
         existed = tbhutils.delete_if_exists(fpath, bn)
@@ -175,6 +129,20 @@ class Executable:
 
       if not existed:
         print(f"[*] injected {bn}")
+
+    # orion has a *weak* dependency to substrate,
+    # but will still crash without it. nice !!!!!!!!!!!
+    if "Orion.framework" in needed:
+      needed.add("substrate.")
+
+    for missing in needed:
+      real = self.common[missing]  # "real" name, thanks substrate!
+      ip = f"{FRAMEWORKS_DIR}/{real}"
+      existed = tbhutils.delete_if_exists(ip, real)
+      shutil.copytree(f"{self.install_dir}/extras/{real}", ip)
+
+      if not existed:
+        print(f"[*] auto-injected {real}")
 
     # FINALLY !!
     if self.inj is not None:  # type: ignore
@@ -223,6 +191,25 @@ class Executable:
         cmd, self.path
       ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
+
+  def fix_dependencies(self, tweaks: dict[str, str], need: set[str]) -> None:
+    self.fakesign()  # sometimes it doesnt work if we dont do this
+
+    for dep in self.get_dependencies():
+      for cname in (tweaks | self.common):
+        if cname in dep:
+          # i wonder if there's a better way to do this?
+          if cname.endswith(".framework"):
+            npath = f"@rpath/{cname}/{cname[:-10]}"
+          else:
+            npath = f"@rpath/{cname}"
+
+          if dep != npath:
+            self.change_dependency(dep, npath)
+            print(f"[*] fixed dependency in {self.bn}: {dep} -> {npath}")
+
+          if cname in self.common:
+            need.add(cname)
 
   def get_dependencies(self) -> list[str]:
     proc = subprocess.run(

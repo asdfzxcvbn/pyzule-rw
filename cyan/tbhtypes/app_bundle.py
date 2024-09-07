@@ -94,7 +94,7 @@ class AppBundle:
       bundle = AppBundle(plugin)
       if bundle.executable.is_encrypted():
         self.remove(plugin)
-        removed.append(os.path.basename(bundle.executable.path))
+        removed.append(bundle.executable.bn)
 
     if len(removed) == 0:
       print("[?] no encrypted plugins")
