@@ -39,7 +39,7 @@ def validate_inputs(args: Namespace) -> Optional[str]:
 
   if args.f is not None:
     # dictionary ensures unique names
-    args.f = {os.path.basename(f): os.path.normpath(f) for f in args.f}
+    args.f = {os.path.basename(f): os.path.realpath(f) for f in args.f}
     nonexistent = [f for f in args.f.values() if not os.path.exists(f)]
 
     if len(nonexistent) != 0:
@@ -168,5 +168,5 @@ def make_ipa(tmpdir: str, output: str, level: int) -> None:
         weird += 1
 
   if weird != 0:
-    print(f"[?] was unable to zip {weird} files due to timestamps")
+    print(f"[?] was unable to zip {weird} file(s) due to timestamps")
 
