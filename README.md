@@ -19,15 +19,17 @@ more coming soon! i'm trying to copy pyzule in order to deprecate it in favor of
 - thin all binaries to arm64, it can LARGELY reduce app size sometimes!
 - remove all app extensions (or just encrypted ones!)
 
-## notes
+## install instructions
 
-cyan is pretty much "v1.0" now i guess. injection works and is stable, and iOS (should..) have all the right fixes for running cyan, however a bug in python3.9 from procursus prevents it from running.
+cyan works on linux, macOS, WSL, and jailbroken iOS!
 
-so to reaffirm this, **iOS is currently not supported until an updated python for iOS gets released**
+first, make sure you have [ar](https://command-not-found.com/ar) and [tar](https://command-not-found.com/tar) installed
 
-**if you want to inject dylibs,** make sure you install lief (you only have to do this once): `pip install -U lief`
+also obviously install python, version 3.9 or greater is required (the version available on the procursus repo for iOS)
 
-to install or update cyan, just `pip install --force-reinstall git+https://github.com/asdfzxcvbn/pyzule-rw.git#egg=cyan`
+**if you want to inject dylibs AND ARE NOT ON iOS,** make sure you install lief (you only have to do this once): `pip install -U lief`
+
+then finally, to install or update cyan, just `pip install --force-reinstall git+https://github.com/asdfzxcvbn/pyzule-rw.git#egg=cyan`
 
 ## todo
 
