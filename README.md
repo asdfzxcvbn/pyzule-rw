@@ -31,7 +31,7 @@ to install or update cyan, just `pip install --force-reinstall git+https://githu
 
 ## todo
 
-[] refactor: dont prepare, just copy and fix as you go
+[x] refactor: dont prepare, just copy and fix as you go
 
 [2] feat: plist operations (-n, -v, -b, -m, -l, -r)
 

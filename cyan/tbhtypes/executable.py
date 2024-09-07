@@ -25,7 +25,7 @@ class Executable:
     # CydiaSubstrate.framework, libsubstrate.dylib, EVEN CydiaSubstrate.dylib
     # AND PROBABLY EVEN MORE !!!! IT'S CRAZY.
 
-    "substrate.": "CydiaSubstrate.framework",
+    "CydiaSubstrate.framework": "CydiaSubstrate.framework",
     "Orion.framework": "Orion.framework",
     "Cephei.framework": "Cephei.framework",
     "CepheiUI.framework": "CepheiUI.framework",
