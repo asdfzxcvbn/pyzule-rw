@@ -66,7 +66,7 @@ def main(parser: ArgumentParser) -> None:
     # done !
     if OUTPUT_IS_IPA:
       print(f"[*] generating ipa with compression level {args.compress}..")
-      tbhutils.make_ipa(tmpdir, args.o, args.compress)
+      tbhutils.make_ipa(tmpdir, os.path.realpath(args.o), args.compress)
       print(f"[*] generated ipa at {args.o}")
     else:
       if os.path.isdir(args.o):

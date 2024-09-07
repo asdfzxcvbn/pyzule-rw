@@ -153,10 +153,17 @@ def extract_deb(deb: str, tweaks: dict[str, str], tmpdir: str) -> None:
 def make_ipa(tmpdir: str, output: str, level: int) -> None:
   # ensure names are written as Payload/...
   os.chdir(tmpdir)
+  weird = 0
 
   with zipfile.ZipFile(
       output, "w", zipfile.ZIP_DEFLATED, compresslevel=level
   ) as zf:
     for f in iglob("Payload/**", recursive=True):
-      zf.write(f)
+      try:
+        zf.write(f)
+      except ValueError:
+        weird += 1
+
+  if weird != 0:
+    print(f"[?] was unable to zip {weird} files due to timestamps")
 
