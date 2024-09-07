@@ -8,7 +8,7 @@ setup(
   author_email="hi@zxcvbn.fyi",
   packages=["cyan", "cyan.tbhtypes"],
   # install_requires=["lief"],
-  python_requires=">=3.10",
+  python_requires=">=3.8",
   include_package_data=True,
   entry_points={
     "console_scripts": ["cyan=cyan.__main__:main"],
