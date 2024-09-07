@@ -4,6 +4,7 @@ import shutil
 import zipfile
 import platform
 import subprocess
+from uuid import uuid4
 from typing import Optional
 from glob import glob, iglob
 from argparse import Namespace
@@ -116,35 +117,38 @@ def delete_if_exists(path: str, bn: str) -> bool:
     return False
 
 
+# damn it, literally EVERY FUCKING python version before 3.12 FUCKING SUCKS
 def extract_deb(deb: str, tweaks: dict[str, str], tmpdir: str) -> None:
-  with TemporaryDirectory(prefix=tmpdir + "/", delete=False) as t2:
-    if platform.system() == "Linux":
-      tool = ["ar", "-x", deb, f"--output={t2}"]
-    else:
-      tool = ["tar", "-xf", deb, f"--directory={t2}"]
+  t2 = f"{tmpdir}/{uuid4()}"
+  os.mkdir(t2)
 
-    try:
-      subprocess.run(tool, check=True)
-    except Exception:
-      sys.exit(f"[!] couldn't extract {os.path.basename(deb)}")
+  if platform.system() == "Linux":
+    tool = ["ar", "-x", deb, f"--output={t2}"]
+  else:
+    tool = ["tar", "-xf", deb, f"--directory={t2}"]
 
-    # it's not always "data.tar.gz"
-    data_tar = glob(f"{t2}/data.*")[0]
-    subprocess.run(["tar", "-xf", data_tar, f"--directory={t2}"])
+  try:
+    subprocess.run(tool, check=True)
+  except Exception:
+    sys.exit(f"[!] couldn't extract {os.path.basename(deb)}")
 
-    for hi in sum((
-        glob(f"{t2}/**/*.dylib", recursive=True),
-        glob(f"{t2}/**/*.bundle", recursive=True),
-        glob(f"{t2}/**/*.appex", recursive=True),
-        glob(f"{t2}/**/*.framework", recursive=True)
-    ), []):  # type: ignore
-      if os.path.islink(hi):
-        continue  # symlinks are broken iirc
+  # it's not always "data.tar.gz"
+  data_tar = glob(f"{t2}/data.*")[0]
+  subprocess.run(["tar", "-xf", data_tar, f"--directory={t2}"])
 
-      tweaks[os.path.basename(hi)] = hi
+  for hi in sum((
+      glob(f"{t2}/**/*.dylib", recursive=True),
+      glob(f"{t2}/**/*.bundle", recursive=True),
+      glob(f"{t2}/**/*.appex", recursive=True),
+      glob(f"{t2}/**/*.framework", recursive=True)
+  ), []):  # type: ignore
+    if os.path.islink(hi):
+      continue  # symlinks are broken iirc
 
-    print(f"[*] extracted {os.path.basename(deb)}")
-    del tweaks[os.path.basename(deb)]
+    tweaks[os.path.basename(hi)] = hi
+
+  print(f"[*] extracted {os.path.basename(deb)}")
+  del tweaks[os.path.basename(deb)]
 
 
 def make_ipa(tmpdir: str, output: str, level: int) -> None:
