@@ -90,9 +90,7 @@ class AppBundle:
     removed: list[str] = []
 
     # a singular * is used to not detect watch apps
-    for plugin in glob(
-        f"{self.path}/*/*.appex", recursive=True
-    ):
+    for plugin in glob(f"{self.path}/*/*.appex"):
       bundle = AppBundle(plugin)
       if bundle.executable.is_encrypted():
         self.remove(plugin)
