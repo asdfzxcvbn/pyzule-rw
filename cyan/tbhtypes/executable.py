@@ -135,7 +135,7 @@ class Executable:
     # orion has a *weak* dependency to substrate,
     # but will still crash without it. nice !!!!!!!!!!!
     if "Orion.framework" in needed:
-      needed.add("substrate.")
+      needed.add("CydiaSubstrate.framework")
 
     for missing in needed:
       real = self.common[missing]  # "real" name, thanks substrate!
