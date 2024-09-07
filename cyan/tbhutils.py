@@ -121,11 +121,11 @@ def extract_deb(deb: str, tweaks: dict[str, str], tmpdir: str) -> None:
   t2 = f"{tmpdir}/{uuid4()}"
   os.mkdir(t2)
 
-  if platform.system() == "Linux" or (
-      "iPhone" in platform.machine()
-      or "iPad" in platform.machine()
-  ):
+  if platform.system() == "Linux":
     tool = ["ar", "-x", deb, f"--output={t2}"]
+  elif "iPhone" in platform.machine() or "iPad" in platform.machine():
+    os.chdir(t2)  # BAHAHAHAHHAHA.
+    tool = ["ar", "-x", deb]
   else:
     tool = ["tar", "-xf", deb, f"--directory={t2}"]
 

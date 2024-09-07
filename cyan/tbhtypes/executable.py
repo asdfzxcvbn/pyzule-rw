@@ -95,10 +95,12 @@ class Executable:
       )
 
     # `extract_deb()` will modify `tweaks`, which is why we make a copy
+    cwd = os.getcwd()
     for bn, path in dict(tweaks).items():
       if bn.endswith(".deb"):
         tbhutils.extract_deb(path, tweaks, tmpdir)
         continue
+    os.chdir(cwd)  # i fucking hate jailbroken iOS utils.
 
     needed: set[str] = set()
     for bn, path in tweaks.items():
