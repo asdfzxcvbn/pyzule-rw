@@ -7,7 +7,6 @@ import subprocess
 from typing import Optional
 from glob import glob, iglob
 from argparse import Namespace
-from importlib import resources  # type: ignore
 from tempfile import TemporaryDirectory
 
 
@@ -92,11 +91,14 @@ def get_tools_dir() -> tuple[str, str]:
   if "iPhone" in mach or "iPad" in mach:
     mach = "iOS"
 
-  with resources.files() as files:  # type: ignore
-    return (
-      str(files),  # type: ignore
-      str(files / "tools" / system / mach)  # type: ignore
-    )
+  # thank god i dont have to use importlib,
+  # it's the WORST standard library package prior to 3.12
+  install_dir = os.path.dirname(__file__)
+
+  return (
+    install_dir,
+    f"{install_dir}/tools/{system}/{mach}"
+  )
 
 
 def delete_if_exists(path: str, bn: str) -> bool:
