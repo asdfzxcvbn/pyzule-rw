@@ -29,14 +29,21 @@ def main(parser: ArgumentParser) -> None:
   OUTPUT_IS_IPA = True if args.o.endswith(".ipa") else False
 
   with TemporaryDirectory() as tmpdir, tbhtypes.LeavingCM():
-    app_path, plist_path = tbhutils.get_app(args.i, tmpdir, INPUT_IS_IPA)
-    app = tbhtypes.AppBundle(app_path, plist_path)
+    app_path = tbhutils.get_app(args.i, tmpdir, INPUT_IS_IPA)
+    app = tbhtypes.AppBundle(app_path)
 
     if app.executable.is_encrypted():
       if args.ignore_encrypted:
         print("[?] main binary is encrypted, ignoring")
       else:
         sys.exit("[!] main binary is encrypted; exiting")
+
+    # this goes before injection,
+    # since user might inject their own extensions
+    if args.remove_extensions:
+      app.remove_all_extensions()
+    elif args.remove_encrypted:
+      app.remove_encrypted_extensions()
 
     if args.f is not None:
       app.executable.inject(args.f, tmpdir)

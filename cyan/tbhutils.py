@@ -8,7 +8,6 @@ from uuid import uuid4
 from typing import Optional
 from glob import glob, iglob
 from argparse import Namespace
-from tempfile import TemporaryDirectory
 
 
 def validate_inputs(args: Namespace) -> Optional[str]:
@@ -50,7 +49,7 @@ def validate_inputs(args: Namespace) -> Optional[str]:
       sys.exit(1)
 
 
-def get_app(path: str, tmpdir: str, is_ipa: bool) -> tuple[str, str]:
+def get_app(path: str, tmpdir: str, is_ipa: bool) -> str:
   payload = f"{tmpdir}/Payload"
 
   if is_ipa:
@@ -67,7 +66,6 @@ def get_app(path: str, tmpdir: str, is_ipa: bool) -> tuple[str, str]:
 
         ipa.extractall(tmpdir)
         app = glob(f"{payload}/*.app")[0]
-        plist = f"{app}/Info.plist"
     except (KeyError, IndexError):
       sys.exit("[!] couldn't find either Payload or app folder, invalid ipa")
     except zipfile.BadZipFile:
@@ -75,14 +73,14 @@ def get_app(path: str, tmpdir: str, is_ipa: bool) -> tuple[str, str]:
 
     print("[*] extracted ipa")
   else:
-    if not os.path.isfile((plist := f"{path}/Info.plist")):
+    if not os.path.isfile(f"{path}/Info.plist"):
       sys.exit("[!] no Info.plist, invalid app")
 
     print("[*] copying app..")
     shutil.copytree(path, (app := f"{payload}/{os.path.basename(path)}"))
     print("[*] copied app")
 
-  return app, plist
+  return app
 
 
 def get_tools_dir() -> tuple[str, str]:
@@ -118,6 +116,7 @@ def delete_if_exists(path: str, bn: str) -> bool:
 
 
 # damn it, literally EVERY FUCKING python version before 3.12 FUCKING SUCKS
+# no `delete` in `TemporaryDirectory` ?! GREAT !!!
 def extract_deb(deb: str, tweaks: dict[str, str], tmpdir: str) -> None:
   t2 = f"{tmpdir}/{uuid4()}"
   os.mkdir(t2)

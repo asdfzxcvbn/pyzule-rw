@@ -1,15 +1,15 @@
 import os
 import shutil
 from glob import glob
-from typing import Optional
+from typing import Optional, Literal
 
 from .executable import Executable
 from .plist import Plist
 
 class AppBundle:
-  def __init__(self, path: str, plist_path: str):
+  def __init__(self, path: str):
     self.path = path
-    self.plist = Plist(plist_path)
+    self.plist = Plist(f"{path}/Info.plist")
 
     self.executable = Executable(
       f"{path}/{self.plist['CFBundleExecutable']}",
@@ -18,25 +18,29 @@ class AppBundle:
 
     self.cached_executables: Optional[list[str]] = None
 
-  def remove(self, name: str) -> bool:
-    path = f"{self.path}/{name}"
-    if not os.path.exists(path):
-      return False
+  def remove(self, *names: str) -> bool:
+    existed = False
 
-    try:
-      shutil.rmtree(path)
-    except NotADirectoryError:
-      os.remove(path)
+    for name in names:
+      if self.path in name:  # i do this in `remove_encrypted_extensions()`
+        path = name
+      else:
+        path = f"{self.path}/{name}"
 
-    return True
+      if not os.path.exists(path):
+        continue
+
+      try:
+        shutil.rmtree(path)
+      except NotADirectoryError:
+        os.remove(path)
+
+      existed = True
+
+    return existed
 
   def remove_watch_apps(self) -> None:
-    removed = False
-    for name in ("Watch", "WatchKit", "com.apple.WatchPlaceholder"):
-      if self.remove(name):
-        removed = True
-
-    if removed:
+    if self.remove("Watch", "WatchKit", "com.apple.WatchPlaceholder"):
       print("[*] removed watch app")
     else:
       print("[?] watch app not present")
@@ -48,7 +52,7 @@ class AppBundle:
         glob(f"{self.path}/**/*.framework", recursive=True)
     ), [])  # type: ignore
 
-  def mass_operate(self, op: str, func: str) -> None:
+  def mass_operate(self, op: str, func: Literal["fakesign", "thin"]) -> None:
     # this works since we call this after injecting
     if self.cached_executables is None:
       self.cached_executables = self.get_executables()
@@ -75,4 +79,27 @@ class AppBundle:
 
   def thin_all(self) -> None:
     self.mass_operate("thinned", "thin")
+
+  def remove_all_extensions(self) -> None:
+    if self.remove("Extensions", "PlugIns"):
+      print("[*] removed app extensions")
+    else:
+      print("[?] no app extensions")
+
+  def remove_encrypted_extensions(self) -> None:
+    removed: list[str] = []
+
+    # a singular * is used to not detect watch apps
+    for plugin in glob(
+        f"{self.path}/*/*.appex", recursive=True
+    ):
+      bundle = AppBundle(plugin)
+      if bundle.executable.is_encrypted():
+        self.remove(plugin)
+        removed.append(os.path.basename(bundle.executable.path))
+
+    if len(removed) == 0:
+      print("[?] no encrypted plugins")
+    else:
+      print("[*] removed encrypted plugins:", ", ".join(removed))
 

@@ -47,6 +47,14 @@ def main() -> None:
     "-q", "--thin", action="store_true",
     help="thin all binaries to arm64, may largely reduce size"
   )
+  parser.add_argument(
+    "-e", "--remove-extensions", action="store_true",
+    help="remove all app extensions"
+  )
+  parser.add_argument(
+    "-g", "--remove-encrypted", action="store_true",
+    help="only remove encrypted app extensions"
+  )
 
   parser.add_argument(
     "-c", "--compress", metavar="level", type=int, default=6,

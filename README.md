@@ -17,6 +17,7 @@ more coming soon! i'm trying to copy pyzule in order to deprecate it in favor of
 - remove watch app
 - fakesign the output ipa/app
 - thin all binaries to arm64, it can LARGELY reduce app size sometimes!
+- remove all app extensions (or just encrypted ones!)
 
 ## notes
 
@@ -38,9 +39,9 @@ to install or update cyan, just `pip install --force-reinstall git+https://githu
 
 [x] feat: fakesign
 
-[] feat: thin binaries
+[x] feat: thin binaries
 
-[] feat: plugin operations (-q, -e)
+[x] feat: plugin operations (-q, -e)
 
 [] feat: .cyan files (lol rip .pyzule files)
 
