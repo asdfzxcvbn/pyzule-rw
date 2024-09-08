@@ -26,6 +26,22 @@ def main() -> None:
     "-f", metavar="file", nargs="+",
     help="a tweak to inject/item to be added to the bundle"
   )
+  parser.add_argument(
+    "-n", metavar="name",
+    help="modify the app's name"
+  )
+  parser.add_argument(
+    "-v", metavar="version",
+    help="modify the app's version"
+  )
+  parser.add_argument(
+    "-b", metavar="bundle id",
+    help="modify the app's bundle id"
+  )
+  parser.add_argument(
+    "-m", metavar="minimum",
+    help="modify the app's minimum OS version"
+  )
 
   parser.add_argument(
     "-u", "--remove-supported-devices", action="store_true",
@@ -71,7 +87,7 @@ def main() -> None:
   )
 
   parser.add_argument(
-    "-v", "--version", action="version", version="cyan v1.0"
+    "--version", action="version", version="cyan v1.0"
   )
 
   from cyan import logic

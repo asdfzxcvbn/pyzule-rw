@@ -47,6 +47,14 @@ def main(parser: ArgumentParser) -> None:
 
     if args.f is not None:
       app.executable.inject(args.f, tmpdir)
+    if args.n is not None:
+      app.plist.change_name(args.n)
+    if args.v is not None:
+      app.plist.change_version(args.v)
+    if args.b is not None:
+      app.plist.change_bundle_id(args.b)
+    if args.m is not None:
+      app.plist.change_minimum_version(args.m)
 
     if args.remove_supported_devices:
       app.plist.remove_uisd()

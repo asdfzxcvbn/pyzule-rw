@@ -9,7 +9,7 @@ from .plist import Plist
 class AppBundle:
   def __init__(self, path: str):
     self.path = path
-    self.plist = Plist(f"{path}/Info.plist")
+    self.plist = Plist(f"{path}/Info.plist", path)
 
     self.executable = Executable(
       f"{path}/{self.plist['CFBundleExecutable']}",

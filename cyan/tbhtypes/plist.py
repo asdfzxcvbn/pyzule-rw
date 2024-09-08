@@ -1,16 +1,23 @@
 import sys
 import plistlib
-from typing import Any
+from glob import glob
+from typing import Optional, Any
 
 class Plist:
-  def __init__(self, path: str):
+  def __init__(
+      self, path: str, app_path: Optional[str] = None, throw: bool = True
+  ):
     try:
       with open(path, "rb") as f:
         self.data: dict[str, Any] = plistlib.load(f)
     except Exception:
-      sys.exit(f"[!] couldn't read {path}")
+      if throw:
+        sys.exit(f"[!] couldn't read {path}")
+      else:
+        return None
 
     self.path = path
+    self.app_path = app_path
 
   def __getitem__(self, key: str) -> Any:
     return self.data.get(key, None)
@@ -25,33 +32,89 @@ class Plist:
   def remove(self, key: str) -> bool:
     try:
       del self.data[key]
+      self.save()
       return True
     except KeyError:
       return False
 
-  def change(self, key: str, val: Any) -> bool:
+  def change(self, val: Any, *keys: str) -> bool:
     try:
-      if self[key] == val:
+      if all(self[key] == val for key in keys):
         return False
     except KeyError:
-      self[key] = val
+      for key in keys:
+        self[key] = val
 
+    self.save()
     return True
 
   def remove_uisd(self) -> None:
     if self.remove("UISupportedDevices"):
-      self.save()
       print("[*] removed UISupportedDevices")
     else:
       print("[?] no UISupportedDevices")
 
   def enable_documents(self) -> None:
-    c1 = self.change("UISupportsDocumentBrowser", True)
-    c2 = self.change("UIFileSharingEnabled", True)
+    c1 = self.change(True, "UISupportsDocumentBrowser")
+    c2 = self.change(True, "UIFileSharingEnabled")
 
     if c1 or c2:
-      self.save()
       print("[*] enabled documents support")
     else:
       print("[?] documents support was already enabled")
+
+  def change_name(self, name: str) -> None:
+    if self.change("CFBundleName", "CFBundleDisplayName", name):
+      print(f"[*] changed name to \"{name}\"")
+      changed = 0
+
+      for lproj in glob(f"{self.app_path}/*.lproj"):
+        try:
+          pl = Plist(f"{lproj}/InfoPlist.strings", None, False)
+          pl["CFBundleDisplayName"] = name
+          pl["CFBundleName"] = name
+          pl.save()
+          changed += 1
+        except Exception:
+          pass  # file might not exist
+
+      if changed != 0:
+        print(f"[*] changed \033[96m{changed}\033[0m localized names")
+    else:
+      print(f"[?] name was already \"{name}\"")
+
+  def change_version(self, version: str) -> None:
+    if self.change("CFBundleVersion", "CFBundleShortVersionString", version):
+      print(f"[*] changed version to \"{version}\"")
+    else:
+      print(f"[?] version was already \"{version}\"")
+
+  def change_bundle_id(self, bundle_id: str) -> None:
+    orig = self["CFBundleIdentifier"]
+
+    if self.change("CFBundleIdentifier", bundle_id):
+      print(f"[*] changed bundle id to \"{bundle_id}\"")
+      changed = 0
+
+      # change all other bundle ids
+      for ext in glob(f"{self.app_path}/*/*.appex"):
+        try:
+          pl = Plist(f"{ext}/Info.plist", None, False)
+          current = pl["CFBundleIdentifier"]
+          pl["CFBundleIdentifier"] = current.replace(orig, bundle_id)
+          pl.save()
+          changed += 1
+        except Exception:
+          pass  # how tf would it not exist? idk
+
+      if changed != 0:
+        print(f"[*] changed \033[96m{changed}\033[0m other bundle ids")
+    else:
+      print(f"[?] bundle id was already \"{bundle_id}\"")
+
+  def change_minimum_version(self, minimum: str) -> None:
+    if self.change("MinimumOSVersion", minimum):
+      print(f"[*] changed minimum version to \"{minimum}\"")
+    else:
+      print(f"[?] minimum version was already \"{minimum}\"")
 

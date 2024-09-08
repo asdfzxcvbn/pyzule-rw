@@ -35,7 +35,7 @@ then finally, to install or update cyan, just `pip install --force-reinstall git
 
 [x] refactor: dont prepare, just copy and fix as you go
 
-[2] feat: plist operations (-n, -v, -b, -m, -l, -r)
+[x] feat: plist operations (-l and -r wont be implemented)
 
 [x] feat: remove watch app
 
