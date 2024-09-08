@@ -13,6 +13,7 @@ more coming soon! i'm trying to copy pyzule in order to deprecate it in favor of
 - inject deb, dylib, framework, bundle, and appex files/folders
 - automatically fix dependencies on CydiaSubstrate **(cyan uses [ElleKit](https://github.com/evelyneee/ellekit/)!)**, Cephei*, and Orion
 - copy any unknown file/folder types to app root
+- change app name, version, bundle id, and minimum os version
 - remove UISupportedDevices
 - remove watch app
 - fakesign the output ipa/app
@@ -44,6 +45,8 @@ then finally, to install or update cyan, just `pip install --force-reinstall git
 [x] feat: thin binaries
 
 [x] feat: plugin operations (-q, -e)
+
+[] feat: change app icon
 
 [] feat: .cyan files (lol rip .pyzule files)
 

@@ -48,6 +48,12 @@ def validate_inputs(args: Namespace) -> Optional[str]:
         print(f"[?] - {ne}")
       sys.exit(1)
 
+  if (
+      args.m is not None
+      and any(char not in "0123456789." for char in args.m)
+  ):
+    sys.exit(f"[!] invalid OS version: {args.m}")
+
 
 def get_app(path: str, tmpdir: str, is_ipa: bool) -> str:
   payload = f"{tmpdir}/Payload"
