@@ -54,6 +54,9 @@ def validate_inputs(args: Namespace) -> Optional[str]:
   ):
     sys.exit(f"[!] invalid OS version: {args.m}")
 
+  if args.k is not None and not os.path.isfile(args.k):
+    sys.exit(f"[!] {args.k} does not exist")
+
 
 def get_app(path: str, tmpdir: str, is_ipa: bool) -> str:
   payload = f"{tmpdir}/Payload"

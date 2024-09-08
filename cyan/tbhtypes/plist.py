@@ -25,6 +25,9 @@ class Plist:
   def __setitem__(self, key: str, val: Any) -> None:
     self.data[key] = val
 
+  def __contains__(self, key: str) -> bool:
+    return key in self.data
+
   def save(self) -> None:
     with open(self.path, "wb") as f:
       plistlib.dump(self.data, f)

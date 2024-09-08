@@ -16,6 +16,7 @@ more coming soon! i'm trying to copy pyzule in order to deprecate it in favor of
 - change app name, version, bundle id, and minimum os version
 - remove UISupportedDevices
 - remove watch app
+- change the app icon
 - fakesign the output ipa/app
 - thin all binaries to arm64, it can LARGELY reduce app size sometimes!
 - remove all app extensions (or just encrypted ones!)
@@ -29,6 +30,8 @@ first, make sure you have [ar](https://command-not-found.com/ar) and [tar](https
 also obviously install python, version 3.9 or greater is required (the version available on the procursus repo for iOS)
 
 **if you want to inject dylibs AND ARE NOT ON iOS,** make sure you install lief (you only have to do this once): `pip install -U lief`
+
+**if you want to change app icons (iOS NOT supported),** also make sure you install pillow: `pip install Pillow`
 
 then finally, to install or update cyan, just `pip install --force-reinstall git+https://github.com/asdfzxcvbn/pyzule-rw.git#egg=cyan`
 
@@ -46,7 +49,7 @@ then finally, to install or update cyan, just `pip install --force-reinstall git
 
 [x] feat: plugin operations (-q, -e)
 
-[] feat: change app icon
+[x] feat: change app icon
 
 [] feat: .cyan files (lol rip .pyzule files)
 

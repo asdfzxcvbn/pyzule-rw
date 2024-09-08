@@ -42,6 +42,10 @@ def main() -> None:
     "-m", metavar="minimum",
     help="modify the app's minimum OS version"
   )
+  parser.add_argument(
+    "-k", metavar="icon",
+    help="modify the app's icon"
+  )
 
   parser.add_argument(
     "-u", "--remove-supported-devices", action="store_true",

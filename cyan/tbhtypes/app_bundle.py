@@ -1,6 +1,7 @@
 import os
 import shutil
 from glob import glob
+from uuid import uuid4
 from typing import Optional, Literal
 
 from .executable import Executable
@@ -100,4 +101,46 @@ class AppBundle:
       print("[?] no encrypted plugins")
     else:
       print("[*] removed encrypted plugins:", ", ".join(removed))
+
+  def change_icon(self, path: str, tmpdir: str) -> None:
+    try:
+      from PIL import Image
+    except Exception:
+      return print("[?] pillow is not installed, -k is not available")
+
+    tmpath = f"{tmpdir}/icon.png"
+    if not path.endswith(".png"):
+      with Image.open(path) as img:
+        img.save(tmpath, "PNG")
+    else:
+      shutil.copyfile(path, tmpath)
+
+    uid = f"cyan_{uuid4().hex[:7]}a"  # can't have it end with a num
+    i60 = f"{uid}60x60"
+    i76 = f"{uid}76x76"
+
+    with Image.open(tmpath) as img:
+      img.resize((120, 120)).save(f"{self.path}/{i60}@2x.png", "PNG")
+      img.resize((152, 152)).save(f"{self.path}/{i76}@2x~ipad.png", "PNG")
+
+    if "CFBundleIcons" not in self.plist:
+      self.plist["CFBundleIcons"] = {}
+    if "CFBundleIcons~ipad" not in self.plist:
+      self.plist["CFBundleIcons~ipad"] = {}
+
+    self.plist["CFBundleIcons"] = self.plist["CFBundleIcons"] | {
+      "CFBundlePrimaryIcon": {
+        "CFBundleIconFiles": [i60],
+        "CFBundleIconName": uid
+      }
+    }
+    self.plist["CFBundleIcons~ipad"] = self.plist["CFBundleIcons~ipad"] | {
+      "CFBundlePrimaryIcon": {
+        "CFBundleIconFiles": [i60, i76],
+        "CFBundleIconName": uid
+      }
+    }
+
+    self.plist.save()
+    print("[*] updated app icon")
 
