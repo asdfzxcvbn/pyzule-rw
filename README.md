@@ -6,7 +6,7 @@ cyan supports **linux, macOS, WSL, and jailbroken iOS!** all either x86_64 or ar
 
 ## features
 
-more coming soon! i'm trying to copy pyzule in order to deprecate it in favor of cyan, which is 1000x better
+you can open an issue to request a feature :D !!
 
 - generate and use [shareable .cyan files](https://github.com/asdfzxcvbn/cyan-gen) to configure IPAs!
 - inject deb, dylib, framework, bundle, and appex files/folders
