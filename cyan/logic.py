@@ -38,6 +38,10 @@ def main(parser: ArgumentParser) -> None:
       else:
         sys.exit("[!] main binary is encrypted; exiting")
 
+    if args.cyan is not None:
+      changing = vars(args)
+      tbhutils.parse_cyan(changing, tmpdir)
+
     # this goes before injection,
     # since user might inject their own extensions
     if args.remove_extensions:

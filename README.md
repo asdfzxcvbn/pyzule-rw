@@ -1,15 +1,14 @@
 # pyzule-rw / cyan
 
-rewriting [pyzule](https://github.com/asdfzxcvbn/pyzule), but actually good this time! btw.. cyan/pyzule looks best with a monospace font !! :D
+a rewrite of [pyzule](https://github.com/asdfzxcvbn/pyzule) that doesn't (completely) suck !!
 
-this is pretty much just a hobby project that i'll work on when i'm bored. pyzule in its current state is kinda ugly, but it works and i haven't really had the motivation to work on it. there really isn't any need for improvements, anyway..
-
-`cyan` will ~~target python v3.12 (finally!)~~, be pep8-compliant (hopefully..), and be type-hinted!
+cyan supports **linux, macOS, WSL, and jailbroken iOS!** all either x86_64 or arm64/aarch64 !!
 
 ## features
 
 more coming soon! i'm trying to copy pyzule in order to deprecate it in favor of cyan, which is 1000x better
 
+- generate and use [shareable .cyan files](https://github.com/asdfzxcvbn/cyan-gen) to configure IPAs!
 - inject deb, dylib, framework, bundle, and appex files/folders
 - automatically fix dependencies on CydiaSubstrate **(cyan uses [ElleKit](https://github.com/evelyneee/ellekit/)!)**, Cephei*, and Orion
 - copy any unknown file/folder types to app root
@@ -23,8 +22,6 @@ more coming soon! i'm trying to copy pyzule in order to deprecate it in favor of
 
 ## install instructions
 
-cyan works on linux, macOS, WSL, and jailbroken iOS!
-
 first, make sure you have [ar](https://command-not-found.com/ar) and [tar](https://command-not-found.com/tar) installed
 
 also obviously install python, version 3.9 or greater is required (the version available on the procursus repo for iOS)
@@ -35,7 +32,12 @@ also obviously install python, version 3.9 or greater is required (the version a
 
 then finally, to install or update cyan, just `pip install --force-reinstall git+https://github.com/asdfzxcvbn/pyzule-rw.git#egg=cyan`
 
-## todo
+## acknowledgements
+
+- [Al4ise](https://github.com/Al4ise) for the original [Azule](https://github.com/Al4ise/Azule)
+- [lief-project](https://github.com/lief-project) for [LIEF](https://github.com/lief-project/LIEF)
+
+### todo
 
 [x] refactor: dont prepare, just copy and fix as you go
 
@@ -51,5 +53,7 @@ then finally, to install or update cyan, just `pip install --force-reinstall git
 
 [x] feat: change app icon
 
-[] feat: .cyan files (lol rip .pyzule files)
+[x] feat: .cyan files (lol rip .pyzule files)
+
+:D
 

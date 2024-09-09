@@ -21,6 +21,10 @@ def main() -> None:
     "-o", "--output", metavar="output",
     help="if unspecified, overwrites input"
   )
+  parser.add_argument(
+    "-z", "--cyan", metavar="cyan",
+    help="the .cyan file to use"
+  )
 
   parser.add_argument(
     "-f", metavar="file", nargs="+",

@@ -1,13 +1,14 @@
 import os
 import sys
+import json
 import shutil
 import zipfile
 import platform
 import subprocess
 from uuid import uuid4
-from typing import Optional
 from glob import glob, iglob
 from argparse import Namespace
+from typing import Optional, Any
 
 
 def validate_inputs(args: Namespace) -> Optional[str]:
@@ -56,6 +57,9 @@ def validate_inputs(args: Namespace) -> Optional[str]:
 
   if args.k is not None and not os.path.isfile(args.k):
     sys.exit(f"[!] {args.k} does not exist")
+
+  if args.cyan is not None and not os.path.isfile(args.cyan):
+    sys.exit(f"[!] {args.cyan} does not exist")
 
 
 def get_app(path: str, tmpdir: str, is_ipa: bool) -> str:
@@ -178,4 +182,30 @@ def make_ipa(tmpdir: str, output: str, level: int) -> None:
 
   if weird != 0:
     print(f"[?] was unable to zip {weird} file(s) due to timestamps")
+
+
+def parse_cyan(args: dict[str, Any], tmpdir: str) -> None:
+  print("[*] parsing .cyan file..")
+  with zipfile.ZipFile(args["cyan"]) as zf:
+    DOT_PATH = f"{tmpdir}/cyan"
+    os.mkdir(DOT_PATH)
+
+    with zf.open("config.json") as f:
+      config = json.load(f)
+
+    if "f" in config:
+      NAMES = [n for n in zf.namelist() if n.startswith("inject/")]
+      zf.extractall(DOT_PATH, NAMES)
+
+      # ensure not None
+      args["f"] = args["f"] if args["f"] is not None else {}
+      for e in os.scandir(f"{DOT_PATH}/inject"):
+        args["f"][e.name] = e.path
+      del config["f"]
+    if "k" in config:
+      args["k"] = zf.extract("icon.idk", DOT_PATH)
+      del config["k"]
+
+    for k, v in config.items():
+      args[k] = v
 
