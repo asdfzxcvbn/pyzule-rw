@@ -151,7 +151,7 @@ class Executable:
       self.inj.write(self.path)  # type: ignore
 
     if has_entitlements:
-      subprocess.run(["ldid", f"-S{ENT_PATH}", self.path])
+      subprocess.run([self.ldid, f"-S{ENT_PATH}", self.path])
       print("[*] restored entitlements")
 
   def fakesign(self, keep_entitlements: bool = True) -> bool:
