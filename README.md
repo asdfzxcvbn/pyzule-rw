@@ -8,7 +8,7 @@ cyan supports **linux, macOS, WSL, and jailbroken iOS!** all either x86_64 or ar
 
 you can open an issue to request a feature :D !!
 
-- generate and use [shareable .cyan files](https://github.com/asdfzxcvbn/cyan-gen) to configure IPAs!
+- generate and use shareable .cyan files to configure IPAs!
 - inject deb, dylib, framework, bundle, and appex files/folders
 - automatically fix dependencies on CydiaSubstrate **(cyan uses [ElleKit](https://github.com/evelyneee/ellekit/)!)**, Cephei*, and Orion
 - copy any unknown file/folder types to app root
@@ -27,35 +27,19 @@ first, make sure you have [ar](https://command-not-found.com/ar) and [tar](https
 also obviously install python, version 3.9 or greater is required (the version available on the procursus repo for iOS)
 
 1. install [pipx](https://github.com/pypa/pipx?tab=readme-ov-file#install-pipx)
-2. install cyan: `pipx install https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip`
+2. install cyan: `pipx install --force https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip`
 3. follow any instructions `pipx` may have given you, like `pipx ensurepath`
 4. **if you want to inject dylibs and ARE NOT ON iOS**: `pipx inject cyan lief`
 5. **if you want to change app icons (iOS NOT supported)**: `pipx inject cyan Pillow`
 
 to *update*, just run step 2 again !
 
+## making cyan files
+
+cyan comes bundled with the `cgen` command, which lets you generate `.cyan` files to pass to `-z`/`--cyan` !
+
 ## acknowledgements
 
 - [Al4ise](https://github.com/Al4ise) for the original [Azule](https://github.com/Al4ise/Azule)
 - [lief-project](https://github.com/lief-project) for [LIEF](https://github.com/lief-project/LIEF)
-
-### todo
-
-[x] refactor: dont prepare, just copy and fix as you go
-
-[x] feat: plist operations (-l and -r wont be implemented)
-
-[x] feat: remove watch app
-
-[x] feat: fakesign
-
-[x] feat: thin binaries
-
-[x] feat: plugin operations (-q, -e)
-
-[x] feat: change app icon
-
-[x] feat: .cyan files (lol rip .pyzule files)
-
-:D
 
