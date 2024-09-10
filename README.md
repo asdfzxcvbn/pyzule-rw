@@ -26,11 +26,13 @@ first, make sure you have [ar](https://command-not-found.com/ar) and [tar](https
 
 also obviously install python, version 3.9 or greater is required (the version available on the procursus repo for iOS)
 
-**if you want to inject dylibs AND ARE NOT ON iOS,** make sure you install lief (you only have to do this once): `pip install -U lief`
+1. install [pipx](https://github.com/pypa/pipx?tab=readme-ov-file#install-pipx)
+2. install cyan: `pipx install https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip`
+3. follow any instructions `pipx` may have given you, like `pipx ensurepath`
+4. **if you want to inject dylibs and ARE NOT ON iOS**: `pipx inject cyan lief`
+5. **if you want to change app icons (iOS NOT supported)**: `pipx inject cyan Pillow`
 
-**if you want to change app icons (iOS NOT supported),** also make sure you install pillow: `pip install Pillow`
-
-then finally, to install or update cyan, just `pip install --force-reinstall git+https://github.com/asdfzxcvbn/pyzule-rw.git#egg=cyan`
+to *update*, just run step 2 again !
 
 ## acknowledgements
 
