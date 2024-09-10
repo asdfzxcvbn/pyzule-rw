@@ -153,12 +153,16 @@ def extract_deb(deb: str, tweaks: dict[str, str], tmpdir: str) -> None:
 
   for hi in sum((
       glob(f"{t2}/**/*.dylib", recursive=True),
-      glob(f"{t2}/**/*.bundle", recursive=True),
       glob(f"{t2}/**/*.appex", recursive=True),
+      glob(f"{t2}/**/*.bundle", recursive=True),
       glob(f"{t2}/**/*.framework", recursive=True)
   ), []):  # type: ignore
-    if os.path.islink(hi):
-      continue  # symlinks are broken iirc
+    if (
+        os.path.islink(hi)  # symlinks are broken iirc
+        or hi.count(".bundle") > 1  # prevent sub-bundle detection (rip)
+        or hi.count(".framework") > 1
+    ):
+      continue
 
     tweaks[os.path.basename(hi)] = hi
 
