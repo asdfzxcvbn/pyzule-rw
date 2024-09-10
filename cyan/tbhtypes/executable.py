@@ -76,7 +76,7 @@ class Executable:
       has_entitlements = True
 
     # iirc, injecting doesnt work (sometimes) if the file isn't signed
-    self.fakesign(False)
+    self.remove_signature()
 
     if any(t.endswith(".appex") for t in tweaks):
       os.makedirs(PLUGINS_DIR, exist_ok=True)
@@ -154,6 +154,9 @@ class Executable:
       subprocess.run([self.ldid, f"-S{ENT_PATH}", self.path])
       print("[*] restored entitlements")
 
+  def remove_signature(self) -> None:
+    subprocess.run([self.ldid, "-R", self.path], stderr=subprocess.DEVNULL)
+
   def fakesign(self, keep_entitlements: bool = True) -> bool:
     cmd = [self.ldid, "-S"]
     if keep_entitlements:
@@ -195,7 +198,7 @@ class Executable:
     )
 
   def fix_dependencies(self, tweaks: dict[str, str], need: set[str]) -> None:
-    self.fakesign()  # sometimes it doesnt work if we dont do this
+    self.remove_signature()
 
     for dep in self.get_dependencies():
       for cname in (tweaks | self.common):
