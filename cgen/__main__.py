@@ -123,6 +123,8 @@ def generate_cyan(parser: argparse.ArgumentParser) -> None:
         if os.path.isfile(f):
           zf.write(f, f"inject/{os.path.basename(f)}")
         else:  # G YHUJMNFTGYHNFTGYHTGYHUT6Y7UJM8RFTYHNR564TY
+          if f.endswith("/"):
+            f = f[:-1]  # yes this is needed to prevent a bug wtf
           for dp, _, files in os.walk(f):
             for f2 in files:
               thing = f"{dp}/{f2}"
