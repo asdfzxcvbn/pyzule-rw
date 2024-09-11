@@ -2,8 +2,6 @@
 
 a rewrite of [pyzule](https://github.com/asdfzxcvbn/pyzule) that doesn't (completely) suck !!
 
-cyan supports **linux, macOS, WSL, and jailbroken iOS!** all either x86_64 or arm64/aarch64 !!
-
 ## features
 
 you can open an issue to request a feature :D !!
@@ -22,17 +20,33 @@ you can open an issue to request a feature :D !!
 
 ## install instructions
 
+cyan supports **linux, macOS, WSL, and jailbroken iOS!** all either x86_64 or arm64/aarch64 !!
+
 first, make sure you have [ar](https://command-not-found.com/ar) and [tar](https://command-not-found.com/tar) installed
 
-also obviously install python, version 3.9 or greater is required (the version available on the procursus repo for iOS)
+also obviously install python, version 3.9 or greater is required
 
-1. install [pipx](https://github.com/pypa/pipx?tab=readme-ov-file#install-pipx)
-2. install cyan: `pipx install --force https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip`
-3. follow any instructions `pipx` may have given you, like `pipx ensurepath`
-4. **if you want to inject dylibs and ARE NOT ON iOS**: `pipx inject cyan lief`
-5. **if you want to change app icons (iOS NOT supported)**: `pipx inject cyan Pillow`
+<details>
+<summary><b>linux/WSL/macOS instructions</b></summary>
+<br/>
+<ol>
+  <li>install <a href="https://github.com/pypa/pipx?tab=readme-ov-file#install-pipx">pipx</a></li>
+  <li>install OR update cyan: <code>pipx install --force https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip</code></li>
+  <li>add cyan to PATH: <code>pipx ensurepath</code></li>
+  <li><b>if you want to inject dylibs and ARE NOT ON iOS</b>: <code>pipx inject cyan lief</code></li>
+  <li><b>if you want to change app icons (iOS NOT supported)</b>: <code>pipx inject cyan Pillow</code></li>
+</ol>
+</details>
 
-to *update*, just run step 2 again !
+<details>
+<summary><b>jailbroken iOS instructions</b></summary>
+<br/>
+<ol>
+  <li>install OR update cyan: <code>pip install --force-reinstall https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip</code></li>
+</ol>
+</details>
+
+note: if you installed cyan before v1.1.3 using `pip`, make sure you `pip uninstall cyan`, then verify you have the latest version with `cyan --version`
 
 ## making cyan files
 
