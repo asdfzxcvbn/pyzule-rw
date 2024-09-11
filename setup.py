@@ -4,12 +4,11 @@ from setuptools import setup
 
 setup(
   name="cyan",
-  version="1.1.2",
+  version="1.1.3",
   description="finally, pyzule doesn't suck",
   author="zx",
   author_email="zx@hrzn.email",
   packages=["cyan", "cyan.tbhtypes", "cgen"],
-  # install_requires=["lief"],
   python_requires=">=3.9",
   include_package_data=True,
   entry_points={
