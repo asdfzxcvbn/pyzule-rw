@@ -39,15 +39,19 @@ def validate_inputs(args: Namespace) -> Optional[str]:
         sys.exit(0)
 
   if args.f is not None:
-    # dictionary ensures unique names
-    args.f = {os.path.basename(f): os.path.realpath(f) for f in args.f}
-    nonexistent = [f for f in args.f.values() if not os.path.exists(f)]
+    new: dict[str, str] = {}  # dictionary ensures unique names
 
-    if len(nonexistent) != 0:
-      print("[!] please ensure the following file(s) exist:")
-      for ne in nonexistent:
-        print(f"[?] - {ne}")
-      sys.exit(1)
+    for f in list(args.f):
+      if f[-1] == "/":  # yeah this is stupid
+        f = f[:-1]
+
+      if not os.path.exists(f):
+        sys.exit(f"[!] \"{f}\" does not exist")
+
+      new[os.path.basename(f)] = os.path.realpath(f)
+
+    # i would've modified args.f directly, but it causes type-hinting error :(
+    args.f = new
 
   if (
       args.m is not None
