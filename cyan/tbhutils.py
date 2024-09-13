@@ -106,11 +106,12 @@ def get_tools_dir() -> tuple[str, str]:
   # thank god i dont have to use importlib,
   # it's the WORST standard library package prior to 3.12
   install_dir = os.path.dirname(__file__)
+  specific_dir = f"{install_dir}/tools/{system}/{mach}"
 
-  return (
-    install_dir,
-    f"{install_dir}/tools/{system}/{mach}"
-  )
+  if not os.path.isdir(specific_dir):
+    sys.exit(f"[!] cyan is not supported on: {system} {mach}")
+
+  return (install_dir, specific_dir)
 
 
 def delete_if_exists(path: str, bn: str) -> bool:

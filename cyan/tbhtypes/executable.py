@@ -18,6 +18,7 @@ class Executable:
   ldid = f"{specific}/ldid"
   lipo = f"{specific}/lipo"
   otool = f"{specific}/otool"
+  idylib = f"{specific}/insert_dylib"
 
   starters = ("\t/Library/", "\t@rpath", "\t@executable_path")
   common = {
@@ -42,10 +43,10 @@ class Executable:
     self.bn = os.path.basename(path)
     self.inj: Optional = None  # type: ignore
 
-    if self.specific.endswith("iOS"):
-      self.inj_func = self.ios_inject
+    if os.path.isfile(self.idylib):
+      self.inj_func = self.idyl_inject
     else:
-      self.inj_func = self.insert_cmd
+      self.inj_func = self.lief_inj
 
   def is_encrypted(self) -> bool:
     proc = subprocess.run(
@@ -177,7 +178,7 @@ class Executable:
       stderr=subprocess.DEVNULL
     )
 
-  def insert_cmd(self, cmd: str) -> None:
+  def lief_inj(self, cmd: str) -> None:
     if self.inj is None:  # type: ignore
       try:
         lief.logging.disable()  # type: ignore
@@ -186,16 +187,21 @@ class Executable:
 
       self.inj = lief.parse(self.path)  # type: ignore
 
-    self.inj.add(lief.MachO.DylibCommand.weak_lib(cmd))  # type: ignore
+    try:
+      self.inj.add(lief.MachO.DylibCommand.weak_lib(cmd))  # type: ignore
+    except AttributeError:
+      sys.exit("[!] couldn't add LC (lief), did you use a valid app?")
 
-  def ios_inject(self, cmd: str) -> None:
-    subprocess.run(
+  def idyl_inject(self, cmd: str) -> None:
+    proc = subprocess.run(
       [
-        f"{self.specific}/insert_dylib",
-        "--weak", "--inplace", "--no-strip-codesig", "--all-yes",
+        self.idylib, "--weak", "--inplace", "--strip-codesig", "--all-yes",
         cmd, self.path
-      ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+      ], capture_output=True, text=True
     )
+
+    if proc.returncode != 0:
+      sys.exit(f"[!] couldn't add LC (insert_dylib), error:\n{proc.stderr}")
 
   def fix_dependencies(self, tweaks: dict[str, str], need: set[str]) -> None:
     self.remove_signature()
