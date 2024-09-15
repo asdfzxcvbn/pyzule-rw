@@ -86,6 +86,6 @@ def main(parser: ArgumentParser) -> None:
       if os.path.isdir(args.o):
         shutil.rmtree(args.o)
 
-      shutil.move(app_path, args.o)
+      shutil.move(app.path, args.o)
       print(f"[*] generated app at {args.o}")
 

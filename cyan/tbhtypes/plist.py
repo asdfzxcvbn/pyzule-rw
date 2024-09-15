@@ -44,6 +44,7 @@ class Plist:
     try:
       if all(self[key] == val for key in keys):
         return False
+      raise KeyError  # lets pretend this was always here..
     except KeyError:
       for key in keys:
         self[key] = val
@@ -67,15 +68,14 @@ class Plist:
       print("[?] documents support was already enabled")
 
   def change_name(self, name: str) -> None:
-    if self.change("CFBundleName", "CFBundleDisplayName", name):
+    if self.change(name, "CFBundleName", "CFBundleDisplayName"):
       print(f"[*] changed name to \"{name}\"")
       changed = 0
 
       for lproj in glob(f"{self.app_path}/*.lproj"):
         try:
           pl = Plist(f"{lproj}/InfoPlist.strings", None, False)
-          pl["CFBundleDisplayName"] = name
-          pl["CFBundleName"] = name
+          pl.change(name, "CFBundleName", "CFBundleDisplayName")
           pl.save()
           changed += 1
         except Exception:
@@ -87,7 +87,7 @@ class Plist:
       print(f"[?] name was already \"{name}\"")
 
   def change_version(self, version: str) -> None:
-    if self.change("CFBundleVersion", "CFBundleShortVersionString", version):
+    if self.change(version, "CFBundleVersion", "CFBundleShortVersionString"):
       print(f"[*] changed version to \"{version}\"")
     else:
       print(f"[?] version was already \"{version}\"")
@@ -95,7 +95,7 @@ class Plist:
   def change_bundle_id(self, bundle_id: str) -> None:
     orig = self["CFBundleIdentifier"]
 
-    if self.change("CFBundleIdentifier", bundle_id):
+    if self.change(bundle_id, "CFBundleIdentifier"):
       print(f"[*] changed bundle id to \"{bundle_id}\"")
       changed = 0
 
@@ -116,7 +116,7 @@ class Plist:
       print(f"[?] bundle id was already \"{bundle_id}\"")
 
   def change_minimum_version(self, minimum: str) -> None:
-    if self.change("MinimumOSVersion", minimum):
+    if self.change(minimum, "MinimumOSVersion"):
       print(f"[*] changed minimum version to \"{minimum}\"")
     else:
       print(f"[?] minimum version was already \"{minimum}\"")
