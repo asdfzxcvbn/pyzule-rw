@@ -38,7 +38,7 @@ also obviously install python, version 3.9 or greater is required
 </details>
 
 <details>
-<summary><b>jailbroken iOS instructions</b></summary>
+<summary><b>jailbroken iOS instructions / automated environment (github workflow, etc)</b></summary>
 <br/>
 <ol>
   <li>install OR update cyan: <code>pip install --force-reinstall https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip</code></li>
@@ -55,4 +55,6 @@ cyan comes bundled with the `cgen` command, which lets you generate `.cyan` file
 
 - [Al4ise](https://github.com/Al4ise) for the original [Azule](https://github.com/Al4ise/Azule)
 - [lief-project](https://github.com/lief-project) for [LIEF](https://github.com/lief-project/LIEF)
+- [tyilo](https://github.com/tyilo) for [insert_dylib](https://github.com/tyilo/insert_dylib/) (macOS/iOS)
+- [LeanVel](https://github.com/LeanVel) for [insert_dylib](https://github.com/LeanVel/insert_dylib) (linux)
 
