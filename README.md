@@ -32,7 +32,6 @@ also obviously install python, version 3.9 or greater is required
 <ol>
   <li>install <a href="https://github.com/pypa/pipx?tab=readme-ov-file#install-pipx">pipx</a></li>
   <li>install OR update cyan: <code>pipx install --force https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip</code></li>
-  <li>add cyan to PATH: <code>pipx ensurepath</code></li>
   <li><b>if you want to inject dylibs ON AARCH64 LINUX</b>: <code>pipx inject cyan lief</code></li>
   <li><b>if you want to change app icons (iOS NOT supported)</b>: <code>pipx inject cyan Pillow</code></li>
 </ol>
