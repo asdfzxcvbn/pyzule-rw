@@ -4,7 +4,7 @@
 name: feature request
 description: request a feature in cyan
 title: "[feature request] "
-labels: feature-request
+labels: enhancement
 body:
   - type: checkboxes
     attributes:
