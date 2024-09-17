@@ -2,7 +2,7 @@
 # https://github.com/arichornlover/uYouEnhanced/blob/main/.github/ISSUE_TEMPLATE/bug.yaml?plain=1
 
 name: feature request
-description: request a feature in cyan
+description: request a feature to be added to cyan
 title: "[feature request] "
 labels: enhancement
 body:
