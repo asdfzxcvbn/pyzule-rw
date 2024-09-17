@@ -1,0 +1,22 @@
+# thanks to uYouEnhanced for the issue template:
+# https://github.com/arichornlover/uYouEnhanced/blob/main/.github/ISSUE_TEMPLATE/bug.yaml?plain=1
+
+name: bug
+description: report a bug in cyan
+title: "[bug] "
+labels: bug
+body:
+  - type: checkboxes
+    attributes:
+      label: have you searched the existing issues?
+      options:
+        - label: this is a unique issue. i agree that if this isn't a unique issue, i'll be BLOCKED from the cyan repo
+          required: true
+
+  - type: textarea
+    attributes:
+      label: describe the bug.
+      description: attach videos or screenshots if possible
+    validations:
+      required: true
+

@@ -4,7 +4,7 @@ a rewrite of [pyzule](https://github.com/asdfzxcvbn/pyzule) that doesn't (comple
 
 ## features
 
-you can open an issue to request a feature :D !!
+you can open an issue to request a feature :D !! also see my [recommended flags](https://github.com/asdfzxcvbn/pyzule-rw/wiki/recommended-flags)
 
 - generate and use shareable .cyan files to configure IPAs!
 - inject deb, dylib, framework, bundle, and appex files/folders

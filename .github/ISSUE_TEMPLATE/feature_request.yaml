@@ -1,0 +1,22 @@
+# thanks to uYouEnhanced for the issue template:
+# https://github.com/arichornlover/uYouEnhanced/blob/main/.github/ISSUE_TEMPLATE/bug.yaml?plain=1
+
+name: feature request
+description: request a feature in cyan
+title: "[feature request] "
+labels: feature-request
+body:
+  - type: checkboxes
+    attributes:
+      label: have you searched the existing issues?
+      options:
+        - label: this is a unique feature request. i agree that if this isn't a unique request, i'll be BLOCKED from the cyan repo
+          required: true
+
+  - type: textarea
+    attributes:
+      label: describe the feature request.
+      description: what exactly are you requesting? can you provide an example where this would be useful?
+    validations:
+      required: true
+
