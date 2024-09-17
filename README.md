@@ -26,6 +26,8 @@ first, make sure you have [ar](https://command-not-found.com/ar) and [tar](https
 
 also obviously install python, version 3.9 or greater is required
 
+the `zip` and `unzip` commands are *optional* dependencies, they may [fix issues when extracting certain IPAs with chinese characters](https://github.com/asdfzxcvbn/pyzule-rw/wiki/file-does-not-exist-(executable)-%3F), etc
+
 <details>
 <summary><b>linux/WSL/macOS instructions</b></summary>
 <br/>

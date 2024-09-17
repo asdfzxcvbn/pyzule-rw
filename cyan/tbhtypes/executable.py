@@ -35,7 +35,12 @@ class Executable:
 
   def __init__(self, path: str, bundle_path: Optional[str] = None):
     if not os.path.isfile(path):
-      sys.exit(f"[!] {path} does not exist (executable)")
+      print(f"[!] {path} does not exist (executable)", file=sys.stderr)
+      sys.exit(
+        "[?] check the wiki for info: "
+        "https://github.com/asdfzxcvbn/pyzule-rw/wiki/"
+        "file-does-not-exist-(executable)-%3F"
+      )
 
     self.path = path
     self.bundle_path = bundle_path

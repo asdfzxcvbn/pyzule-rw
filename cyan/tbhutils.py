@@ -10,6 +10,9 @@ from glob import glob, iglob
 from argparse import Namespace
 from typing import Optional, Any
 
+HAS_ZIP = shutil.which("zip") is not None
+HAS_UNZIP = shutil.which("unzip") is not None
+
 
 def validate_inputs(args: Namespace) -> Optional[str]:
   if not (
@@ -81,7 +84,15 @@ def get_app(path: str, tmpdir: str, is_ipa: bool) -> str:
         elif not any(name.endswith(".app/Info.plist") for name in names):
           sys.exit("[!] no Info.plist, invalid app")
 
-        ipa.extractall(tmpdir)
+        # using unzip fixes extraction errors in ipas with chinese chars, etc
+        if HAS_UNZIP:
+          subprocess.run(
+            ["unzip", path, "-d", tmpdir],
+            stdout=subprocess.DEVNULL
+          )
+        else:
+          ipa.extractall(tmpdir)
+
         app = glob(f"{payload}/*.app")[0]
     except (KeyError, IndexError):
       sys.exit("[!] couldn't find either Payload or app folder, invalid ipa")
@@ -180,14 +191,25 @@ def make_ipa(tmpdir: str, output: str, level: int) -> None:
   os.chdir(tmpdir)
   weird = 0
 
-  with zipfile.ZipFile(
-      output, "w", zipfile.ZIP_DEFLATED, compresslevel=level
-  ) as zf:
-    for f in iglob("Payload/**", recursive=True):
-      try:
-        zf.write(f)
-      except ValueError:
-        weird += 1
+  if HAS_ZIP:
+    try:
+      os.remove(output)  # zip command updates zipfiles by default
+    except FileNotFoundError:
+      pass
+
+    subprocess.run(
+      ["zip", f"-{level}", "-r", output, "Payload"],
+      stdout=subprocess.DEVNULL
+    )
+  else:
+    with zipfile.ZipFile(
+        output, "w", zipfile.ZIP_DEFLATED, compresslevel=level
+    ) as zf:
+      for f in iglob("Payload/**", recursive=True):
+        try:
+          zf.write(f)
+        except ValueError:
+          weird += 1
 
   if weird != 0:
     print(f"[?] was unable to zip {weird} file(s) due to timestamps")
