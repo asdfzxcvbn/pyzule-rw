@@ -1,9 +1,6 @@
 import os
 import shutil
-import plistlib
 import subprocess
-from typing import Any
-from plistlib import dump as pdump
 
 from cyan import tbhutils
 from .executable import Executable
@@ -98,27 +95,12 @@ class MainExecutable(Executable):
       self.sign_with_entitlements(ENT_PATH)
       print("[*] restored entitlements")
 
-  def merge_entitlements(
-      self, entitlements: dict[str, Any], tmpdir: str
-  ) -> None:
-    ENT_PATH = f"{tmpdir}/new.entitlements"
-    existing: dict[str, Any]
-
-    if self.write_entitlements(ENT_PATH):  # has entitlements
-      with open(ENT_PATH, "rb") as f:
-        existing = plistlib.load(f)
-    else:
-      existing = {}
-
-    new = existing | entitlements
-    with open(ENT_PATH, "wb") as f2:
-      pdump(new, f2)
-
-    self.sign_with_entitlements(ENT_PATH)
-    print("[*] modified entitlement keys:", ", ".join(entitlements))
+  def merge_entitlements(self, entitlements: str) -> None:
+    self.sign_with_entitlements(entitlements)
+    print("[*] merged new entitlements")
 
   def sign_with_entitlements(self, entitlements: str) -> bool:
     return subprocess.run(
-      [self.ldid, f"-S{entitlements}", self.path]
+      [self.ldid, f"-S{entitlements}", "-M", self.path]
     ).returncode == 0
 

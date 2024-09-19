@@ -75,7 +75,7 @@ def validate_inputs(args: Namespace) -> Optional[str]:
 
     try:
       with open(args.x, "rb") as f:
-        args.x = pload(f)
+        pload(f)
     except Exception:
       sys.exit("[!] couldn't parse given entitlements file")
 
