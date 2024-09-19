@@ -5,6 +5,7 @@ from uuid import uuid4
 from typing import Optional, Literal
 
 from .executable import Executable
+from .main_executable import MainExecutable
 from .plist import Plist
 
 class AppBundle:
@@ -12,7 +13,7 @@ class AppBundle:
     self.path = path
     self.plist = Plist(f"{path}/Info.plist", path)
 
-    self.executable = Executable(
+    self.executable = MainExecutable(
       f"{path}/{self.plist['CFBundleExecutable']}",
       path
     )

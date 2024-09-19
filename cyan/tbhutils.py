@@ -9,6 +9,7 @@ from uuid import uuid4
 from glob import glob, iglob
 from argparse import Namespace
 from typing import Optional, Any
+from plistlib import load as pload
 
 HAS_ZIP = shutil.which("zip") is not None
 HAS_UNZIP = shutil.which("unzip") is not None
@@ -67,6 +68,16 @@ def validate_inputs(args: Namespace) -> Optional[str]:
 
   if args.cyan is not None and not os.path.isfile(args.cyan):
     sys.exit(f"[!] {args.cyan} does not exist")
+
+  if args.x is not None:
+    if not os.path.isfile(args.x):
+      sys.exit(f"[!] {args.x} does not exist")
+
+    try:
+      with open(args.x, "rb") as f:
+        args.x = pload(f)
+    except Exception:
+      sys.exit("[!] couldn't parse given entitlements file")
 
 
 def get_app(path: str, tmpdir: str, is_ipa: bool) -> str:

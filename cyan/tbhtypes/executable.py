@@ -1,6 +1,5 @@
 import os
 import sys
-import shutil
 import subprocess
 from typing import Optional
 
@@ -33,7 +32,7 @@ class Executable:
     "CepheiPrefs.framework": "CepheiPrefs.framework"
   }
 
-  def __init__(self, path: str, bundle_path: Optional[str] = None):
+  def __init__(self, path: str):
     if not os.path.isfile(path):
       print(f"[!] {path} does not exist (executable)", file=sys.stderr)
       sys.exit(
@@ -43,7 +42,6 @@ class Executable:
       )
 
     self.path = path
-    self.bundle_path = bundle_path
 
     self.bn = os.path.basename(path)
     self.inj: Optional = None  # type: ignore
@@ -61,16 +59,14 @@ class Executable:
 
     return b"cryptid 1" in proc.stdout
 
-  def inject(self, tweaks: dict[str, str], tmpdir: str) -> None:
-    # we only inject into the main executable
-    assert self.bundle_path is not None
+  def remove_signature(self) -> None:
+    subprocess.run([self.ldid, "-R", self.path], stderr=subprocess.DEVNULL)
 
-    has_entitlements = False
-    ENT_PATH = f"{self.bundle_path}/cyan.entitlements"
-    PLUGINS_DIR = f"{self.bundle_path}/PlugIns"
-    FRAMEWORKS_DIR = f"{self.bundle_path}/Frameworks"
+  def fakesign(self) -> bool:
+    return subprocess.run([self.ldid, "-S", "-M", self.path]).returncode == 0
 
-    with open(ENT_PATH, "wb") as entf:
+  def write_entitlements(self, output: str) -> bool:
+    with open(output, "wb") as entf:
       proc = subprocess.run(
         [self.ldid, "-e", self.path],
         capture_output=True
@@ -78,98 +74,7 @@ class Executable:
 
       entf.write(proc.stdout)
 
-    if os.path.getsize(ENT_PATH) > 0:
-      has_entitlements = True
-
-    # iirc, injecting doesnt work (sometimes) if the file isn't signed
-    self.remove_signature()
-
-    if any(t.endswith(".appex") for t in tweaks):
-      os.makedirs(PLUGINS_DIR, exist_ok=True)
-
-    if any(
-        t.endswith(k)
-        for t in tweaks
-        for k in (".deb", ".dylib", ".framework")
-    ):
-      os.makedirs(FRAMEWORKS_DIR, exist_ok=True)
-
-      # some apps really dont have this lol
-      subprocess.run(
-        [self.nt, "-add_rpath", "@executable_path/Frameworks", self.path],
-        stderr=subprocess.DEVNULL
-      )
-
-    # `extract_deb()` will modify `tweaks`, which is why we make a copy
-    cwd = os.getcwd()
-    for bn, path in dict(tweaks).items():
-      if bn.endswith(".deb"):
-        tbhutils.extract_deb(path, tweaks, tmpdir)
-        continue
-    os.chdir(cwd)  # i fucking hate jailbroken iOS utils.
-
-    needed: set[str] = set()
-    for bn, path in tweaks.items():
-      if bn.endswith(".appex"):
-        fpath = f"{PLUGINS_DIR}/{bn}"
-        existed = tbhutils.delete_if_exists(fpath, bn)
-        shutil.copytree(path, fpath)
-      elif bn.endswith(".dylib"):
-        path = shutil.copy2(path, tmpdir)
-        Executable(path).fix_dependencies(tweaks, needed)
-
-        fpath = f"{FRAMEWORKS_DIR}/{bn}"
-        existed = tbhutils.delete_if_exists(fpath, bn)
-        self.inj_func(f"@rpath/{bn}")
-        shutil.move(path, FRAMEWORKS_DIR)
-      elif bn.endswith(".framework"):
-        fpath = f"{FRAMEWORKS_DIR}/{bn}"
-        existed = tbhutils.delete_if_exists(fpath, bn)
-        self.inj_func(f"@rpath/{bn}/{bn[:-10]}")
-        shutil.copytree(path, fpath)
-      else:
-        fpath = f"{self.bundle_path}/{bn}"
-        existed = tbhutils.delete_if_exists(fpath, bn)
-        try:
-          shutil.copytree(path, fpath)
-        except NotADirectoryError:
-          shutil.copy2(path, self.bundle_path)
-
-      if not existed:
-        print(f"[*] injected {bn}")
-
-    # orion has a *weak* dependency to substrate,
-    # but will still crash without it. nice !!!!!!!!!!!
-    if "Orion.framework" in needed:
-      needed.add("CydiaSubstrate.framework")
-
-    for missing in needed:
-      real = self.common[missing]  # "real" name, thanks substrate!
-      ip = f"{FRAMEWORKS_DIR}/{real}"
-      existed = tbhutils.delete_if_exists(ip, real)
-      shutil.copytree(f"{self.install_dir}/extras/{real}", ip)
-
-      if not existed:
-        print(f"[*] auto-injected {real}")
-
-    # FINALLY !!
-    if self.inj is not None:  # type: ignore
-      self.inj.write(self.path)  # type: ignore
-
-    if has_entitlements:
-      subprocess.run([self.ldid, f"-S{ENT_PATH}", self.path])
-      print("[*] restored entitlements")
-
-  def remove_signature(self) -> None:
-    subprocess.run([self.ldid, "-R", self.path], stderr=subprocess.DEVNULL)
-
-  def fakesign(self, keep_entitlements: bool = True) -> bool:
-    cmd = [self.ldid, "-S"]
-    if keep_entitlements:
-      cmd.append("-M")
-
-    subprocess.run(cmd + [self.path])
-    return True
+    return os.path.getsize(output) > 0
 
   def thin(self) -> bool:
     return subprocess.run(

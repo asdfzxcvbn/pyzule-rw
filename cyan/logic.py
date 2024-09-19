@@ -61,6 +61,8 @@ def main(parser: ArgumentParser) -> None:
       app.plist.change_minimum_version(args.m)
     if args.k is not None:
       app.change_icon(args.k, tmpdir)
+    if args.x is not None:  # `validate_inputs()` made it a dict
+      app.executable.merge_entitlements(args.x, tmpdir)
 
     if args.remove_supported_devices:
       app.plist.remove_uisd()

@@ -50,6 +50,10 @@ def main() -> None:
     "-k", metavar="icon",
     help="modify the app's icon"
   )
+  parser.add_argument(
+    "-x", metavar="entitlements",
+    help="add or modify entitlements to the main binary"
+  )
 
   parser.add_argument(
     "-u", "--remove-supported-devices", action="store_true",
