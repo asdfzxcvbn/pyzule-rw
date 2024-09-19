@@ -99,7 +99,7 @@ def main() -> None:
   )
 
   parser.add_argument(
-    "--version", action="version", version="cyan v1.1.6"
+    "--version", action="version", version="cyan v1.2"
   )
 
   from cyan import logic
