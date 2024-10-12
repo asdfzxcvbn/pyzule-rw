@@ -208,8 +208,10 @@ def make_ipa(tmpdir: str, output: str, level: int) -> None:
     except FileNotFoundError:
       pass
 
+    # don't zip hidden files to fix an installd error sometimes
+    # thanks a lot eevee 😭
     subprocess.run(
-      ["zip", f"-{level}", "-r", output, "Payload"],
+      ["zip", f"-{level}", "-r", output, "Payload", "-x", "*/.*"],
       stdout=subprocess.DEVNULL
     )
   else:
