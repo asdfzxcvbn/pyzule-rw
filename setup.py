@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
   name="cyan",
-  version="1.2.1",
+  version="1.2.2",
   description="finally, pyzule doesn't suck",
   author="zx",
   author_email="zx@hrzn.email",
