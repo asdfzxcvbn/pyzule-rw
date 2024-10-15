@@ -1,0 +1,22 @@
+# thanks to uYouEnhanced for the issue template:
+# https://github.com/arichornlover/uYouEnhanced/blob/main/.github/ISSUE_TEMPLATE/bug.yaml?plain=1
+
+name: question
+description: have a question about cyan or its code? use this template!
+title: "[question] "
+labels: question
+body:
+  - type: checkboxes
+    attributes:
+      label: have you searched the existing issues?
+      options:
+        - label: this is a unique question. i agree that if this isn't a unique question, i'll be BLOCKED from the cyan repo
+          required: true
+
+  - type: textarea
+    attributes:
+      label: what's up?
+      description: what's the question?
+    validations:
+      required: true
+
