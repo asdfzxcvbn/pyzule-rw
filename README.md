@@ -14,7 +14,7 @@ you can open an issue to request a feature :D !! also see my [recommended flags]
 - remove UISupportedDevices
 - remove watch app
 - change the app icon
-- fakesign the output ipa/app
+- fakesign the output ipa/tipa/app
 - add custom entitlements to the main executable
 - thin all binaries to arm64, it can LARGELY reduce app size sometimes!
 - remove all app extensions (or just encrypted ones!)
@@ -47,8 +47,6 @@ the `zip` and `unzip` commands are *optional* dependencies, they may [fix issues
   <li>install OR update cyan: <code>pip install --force-reinstall https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip</code></li>
 </ol>
 </details>
-
-note: if you installed cyan before v1.1.3 using `pip`, make sure you `pip uninstall cyan`, then verify you have the latest version with `cyan --version`
 
 ## making cyan files
 

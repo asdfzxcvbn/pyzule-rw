@@ -17,10 +17,11 @@ HAS_UNZIP = shutil.which("unzip") is not None
 
 def validate_inputs(args: Namespace) -> Optional[str]:
   if not (
-      args.i.endswith(".ipa")
-      or args.i.endswith(".app")
+      args.i.endswith(".app")
+      or args.i.endswith(".ipa")
+      or args.i.endswith(".tipa")
   ):
-    return "the input file must be an ipa/app"
+    return "the input file must be an ipa/tipa/app"
 
   if not os.path.exists(args.i):
     return f"{args.i} does not exist"

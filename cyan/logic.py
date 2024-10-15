@@ -13,8 +13,12 @@ def main(parser: ArgumentParser) -> None:
 
   if args.output is not None:
     args.o = os.path.normpath(args.output)
-    if not (args.o.endswith(".app") or args.o.endswith(".ipa")):
-      print("[?] output's file extension not specified; will create ipa")
+    if not (
+        args.o.endswith(".app")
+        or args.o.endswith(".ipa")
+        or args.o.endswith(".tipa")
+    ):
+      print("[?] valid file extension not found; will create ipa")
       args.o += ".ipa"
   else:
     args.o = args.i
@@ -25,8 +29,9 @@ def main(parser: ArgumentParser) -> None:
   if arg_err is not None:
     parser.error(arg_err)
 
-  INPUT_IS_IPA = True if args.i.endswith(".ipa") else False
-  OUTPUT_IS_IPA = True if args.o.endswith(".ipa") else False
+  # mfw when "True if True else False" HAHAHAH
+  INPUT_IS_IPA = args.i.endswith(".ipa") or args.i.endswith(".tipa")
+  OUTPUT_IS_IPA = args.o.endswith(".ipa") or args.o.endswith(".tipa")
 
   with TemporaryDirectory() as tmpdir, tbhtypes.LeavingCM():
     app_path = tbhutils.get_app(args.i, tmpdir, INPUT_IS_IPA)
