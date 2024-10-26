@@ -1,12 +1,6 @@
 import os
 import sys
 import subprocess
-from typing import Optional
-
-try:
-  import lief
-except Exception:
-  pass
 
 from cyan import tbhutils
 
@@ -44,12 +38,6 @@ class Executable:
     self.path = path
 
     self.bn = os.path.basename(path)
-    self.inj: Optional = None  # type: ignore
-
-    if os.path.isfile(self.idylib):
-      self.inj_func = self.idyl_inject
-    else:
-      self.inj_func = self.lief_inject
 
   def is_encrypted(self) -> bool:
     proc = subprocess.run(
@@ -76,31 +64,6 @@ class Executable:
       [self.nt, "-change", old, new, self.path],
       stderr=subprocess.DEVNULL
     )
-
-  def lief_inject(self, cmd: str) -> None:
-    if self.inj is None:  # type: ignore
-      try:
-        lief.logging.disable()  # type: ignore
-      except Exception:
-        sys.exit("[!] did you forget to install lief?")
-
-      self.inj = lief.parse(self.path)  # type: ignore
-
-    try:
-      self.inj.add(lief.MachO.DylibCommand.weak_lib(cmd))  # type: ignore
-    except AttributeError:
-      sys.exit("[!] couldn't add LC (lief), did you use a valid app?")
-
-  def idyl_inject(self, cmd: str) -> None:
-    proc = subprocess.run(
-      [
-        self.idylib, "--weak", "--inplace", "--strip-codesig", "--all-yes",
-        cmd, self.path
-      ], capture_output=True, text=True
-    )
-
-    if proc.returncode != 0:
-      sys.exit(f"[!] couldn't add LC (insert_dylib), error:\n{proc.stderr}")
 
   def fix_dependencies(self, tweaks: dict[str, str], need: set[str]) -> None:
     self.remove_signature()
