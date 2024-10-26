@@ -49,7 +49,7 @@ class Executable:
     if os.path.isfile(self.idylib):
       self.inj_func = self.idyl_inject
     else:
-      self.inj_func = self.lief_inj
+      self.inj_func = self.lief_inject
 
   def is_encrypted(self) -> bool:
     proc = subprocess.run(
@@ -65,17 +65,6 @@ class Executable:
   def fakesign(self) -> bool:
     return subprocess.run([self.ldid, "-S", "-M", self.path]).returncode == 0
 
-  def write_entitlements(self, output: str) -> bool:
-    with open(output, "wb") as entf:
-      proc = subprocess.run(
-        [self.ldid, "-e", self.path],
-        capture_output=True
-      )
-
-      entf.write(proc.stdout)
-
-    return os.path.getsize(output) > 0
-
   def thin(self) -> bool:
     return subprocess.run(
       [self.lipo, "-thin", "arm64", self.path, "-output", self.path],
@@ -88,7 +77,7 @@ class Executable:
       stderr=subprocess.DEVNULL
     )
 
-  def lief_inj(self, cmd: str) -> None:
+  def lief_inject(self, cmd: str) -> None:
     if self.inj is None:  # type: ignore
       try:
         lief.logging.disable()  # type: ignore

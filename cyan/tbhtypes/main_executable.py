@@ -16,7 +16,7 @@ class MainExecutable(Executable):
     FRAMEWORKS_DIR = f"{self.bundle_path}/Frameworks"
     has_entitlements = self.write_entitlements(ENT_PATH)
 
-    # iirc, injecting doesnt work (sometimes) if the file isn't signed
+    # iirc, injecting doesnt work (sometimes) if the file is signed
     self.remove_signature()
 
     if any(t.endswith(".appex") for t in tweaks):
@@ -94,6 +94,17 @@ class MainExecutable(Executable):
     if has_entitlements:
       self.sign_with_entitlements(ENT_PATH)
       print("[*] restored entitlements")
+
+  def write_entitlements(self, output: str) -> bool:
+    with open(output, "wb") as entf:
+      proc = subprocess.run(
+        [self.ldid, "-e", self.path],
+        capture_output=True
+      )
+
+      entf.write(proc.stdout)
+
+    return os.path.getsize(output) > 0
 
   def merge_entitlements(self, entitlements: str) -> None:
     self.sign_with_entitlements(entitlements)
