@@ -36,7 +36,6 @@ class Executable:
       )
 
     self.path = path
-
     self.bn = os.path.basename(path)
 
   def is_encrypted(self) -> bool:

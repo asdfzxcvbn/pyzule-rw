@@ -121,12 +121,14 @@ class MainExecutable(Executable):
     return os.path.getsize(output) > 0
 
   def merge_entitlements(self, entitlements: str) -> None:
-    self.sign_with_entitlements(entitlements)
-    print("[*] merged new entitlements")
+    if self.sign_with_entitlements(entitlements):
+      print("[*] merged new entitlements")
+    else:
+      print("[!] failed to merge new entitlements, are they valid?")
 
   def sign_with_entitlements(self, entitlements: str) -> bool:
     return subprocess.run(
-      [self.ldid, f"-S{entitlements}", "-M", self.path]
+      [self.ldid, f"-S{entitlements}", "-M", "-Cadhoc", self.path]
     ).returncode == 0
 
   def lief_inject(self, cmd: str) -> None:
