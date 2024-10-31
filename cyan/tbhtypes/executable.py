@@ -14,16 +14,31 @@ class Executable:
   idylib = f"{specific}/insert_dylib"
 
   starters = ("\t/Library/", "\t@rpath", "\t@executable_path")
-  common = {
-    # substrate could show up as
-    # CydiaSubstrate.framework, libsubstrate.dylib, EVEN CydiaSubstrate.dylib
-    # AND PROBABLY EVEN MORE !!!! IT'S CRAZY.
 
-    "CydiaSubstrate.framework": "CydiaSubstrate.framework",
-    "Orion.framework": "Orion.framework",
-    "Cephei.framework": "Cephei.framework",
-    "CepheiUI.framework": "CepheiUI.framework",
-    "CepheiPrefs.framework": "CepheiPrefs.framework"
+  # substrate could show up as
+  # CydiaSubstrate.framework, libsubstrate.dylib, EVEN CydiaSubstrate.dylib
+  # AND PROBABLY EVEN MORE !!!! IT'S CRAZY.
+  common = {
+    "ubstrate.": {
+      "name": "CydiaSubstrate.framework",
+      "path": "@rpath/CydiaSubstrate.framework/CydiaSubstrate"
+    },
+    "orion.": {
+      "name": "Orion.framework",
+      "path": "@rpath/Orion.framework/Orion"
+    },
+    "cephei.": {
+      "name": "Cephei.framework",
+      "path": "@rpath/Cephei.framework/Cephei"
+    },
+    "cepheiui.": {
+      "name": "CepheiUI.framework",
+      "path": "@rpath/CepheiUI.framework/CepheiUI"
+    },
+    "cepheiprefs.": {
+      "name": "CepheiPrefs.framework",
+      "path": "@rpath/CepheiPrefs.framework/CepheiPrefs"
+    }
   }
 
   def __init__(self, path: str):
@@ -64,14 +79,33 @@ class Executable:
       stderr=subprocess.DEVNULL
     )
 
-  def fix_dependencies(self, tweaks: dict[str, str], need: set[str]) -> None:
+  def fix_common_dependencies(self, needed: set[str]) -> None:
     self.remove_signature()
 
     for dep in self.get_dependencies():
-      for cname in (tweaks | self.common):
+      for common, info in self.common.items():
+        if common in dep.lower() and dep != info["path"]:
+          self.change_dependency(dep, info["path"])
+          print(
+            f"[*] fixed common dependency in {self.bn}: "
+            f"{dep} -> {info['path']}"
+          )
+
+          needed.add(common)
+
+          # orion has a *weak* dependency to substrate,
+          # but will still crash without it. nice !!!!!!!!!!!
+          if common == "orion.":
+            needed.add("ubstrate.")
+
+  def fix_dependencies(self, tweaks: dict[str, str]) -> None:
+    for dep in self.get_dependencies():
+      for cname in tweaks:
         if cname in dep:
           # i wonder if there's a better way to do this?
           if cname.endswith(".framework"):
+            # nah, not gonna parse the plist,
+            # i've never seen a framework with a "mismatched" name
             npath = f"@rpath/{cname}/{cname[:-10]}"
           else:
             npath = f"@rpath/{cname}"
@@ -79,9 +113,6 @@ class Executable:
           if dep != npath:
             self.change_dependency(dep, npath)
             print(f"[*] fixed dependency in {self.bn}: {dep} -> {npath}")
-
-          if cname in self.common:
-            need.add(cname)
 
   def get_dependencies(self) -> list[str]:
     proc = subprocess.run(

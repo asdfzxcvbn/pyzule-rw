@@ -58,6 +58,8 @@ class MainExecutable(Executable):
     os.chdir(cwd)  # i fucking hate jailbroken iOS utils.
 
     needed: set[str] = set()
+
+    # inject/fix user things
     for bn, path in tweaks.items():
       if bn.endswith(".appex"):
         fpath = f"{PLUGINS_DIR}/{bn}"
@@ -65,7 +67,10 @@ class MainExecutable(Executable):
         shutil.copytree(path, fpath)
       elif bn.endswith(".dylib"):
         path = shutil.copy2(path, tmpdir)
-        Executable(path).fix_dependencies(tweaks, needed)
+
+        e = Executable(path)
+        e.fix_common_dependencies(needed)
+        e.fix_dependencies(tweaks)
 
         fpath = f"{FRAMEWORKS_DIR}/{bn}"
         existed = tbhutils.delete_if_exists(fpath, bn)
@@ -87,13 +92,8 @@ class MainExecutable(Executable):
       if not existed:
         print(f"[*] injected {bn}")
 
-    # orion has a *weak* dependency to substrate,
-    # but will still crash without it. nice !!!!!!!!!!!
-    if "Orion.framework" in needed:
-      needed.add("CydiaSubstrate.framework")
-
     for missing in needed:
-      real = self.common[missing]  # "real" name, thanks substrate!
+      real = self.common[missing]["name"]  # e.g. "Orion.framework"
       ip = f"{FRAMEWORKS_DIR}/{real}"
       existed = tbhutils.delete_if_exists(ip, real)
       shutil.copytree(f"{self.install_dir}/extras/{real}", ip)
