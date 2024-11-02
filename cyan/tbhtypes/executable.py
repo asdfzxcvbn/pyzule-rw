@@ -19,7 +19,7 @@ class Executable:
   # CydiaSubstrate.framework, libsubstrate.dylib, EVEN CydiaSubstrate.dylib
   # AND PROBABLY EVEN MORE !!!! IT'S CRAZY.
   common = {
-    "ubstrate.": {
+    "substrate.": {
       "name": "CydiaSubstrate.framework",
       "path": "@rpath/CydiaSubstrate.framework/CydiaSubstrate"
     },
@@ -92,11 +92,6 @@ class Executable:
           )
 
           needed.add(common)
-
-          # orion has a *weak* dependency to substrate,
-          # but will still crash without it. nice !!!!!!!!!!!
-          if common == "orion.":
-            needed.add("ubstrate.")
 
   def fix_dependencies(self, tweaks: dict[str, str]) -> None:
     for dep in self.get_dependencies():
