@@ -5,7 +5,7 @@ import subprocess
 from typing import Optional
 
 try:
-  import lief
+  import lief  # type: ignore
 except Exception:
   pass
 

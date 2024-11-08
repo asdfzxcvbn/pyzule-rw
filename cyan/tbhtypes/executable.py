@@ -84,14 +84,15 @@ class Executable:
 
     for dep in self.get_dependencies():
       for common, info in self.common.items():
-        if common in dep.lower() and dep != info["path"]:
-          self.change_dependency(dep, info["path"])
-          print(
-            f"[*] fixed common dependency in {self.bn}: "
-            f"{dep} -> {info['path']}"
-          )
-
+        if common in dep.lower():
           needed.add(common)
+
+          if dep != info["path"]:
+            self.change_dependency(dep, info["path"])
+            print(
+              f"[*] fixed common dependency in {self.bn}: "
+              f"{dep} -> {info['path']}"
+            )
 
   def fix_dependencies(self, tweaks: dict[str, str]) -> None:
     for dep in self.get_dependencies():
