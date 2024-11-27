@@ -253,6 +253,12 @@ def parse_cyan(args: dict[str, Any], tmpdir: str) -> None:
     if "k" in config:
       args["k"] = zf.extract("icon.idk", DOT_PATH)
       del config["k"]
+    if "l" in config:
+      args["l"] = zf.extract("merge.plist", DOT_PATH)
+      del config["l"]
+    if "x" in config:
+      args["x"] = zf.extract("new.entitlements", DOT_PATH)
+      del config["x"]
 
     for k, v in config.items():
       args[k] = v

@@ -42,6 +42,14 @@ def main() -> None:
     "-k", metavar="icon",
     help="modify the app's icon"
   )
+  parser.add_argument(
+    "-l", metavar="plist",
+    help="a plist to merge with the app's Info.plist"
+  )
+  parser.add_argument(
+    "-x", metavar="entitlements",
+    help="add or modify entitlements to the main binary"
+  )
 
   parser.add_argument(
     "-u", "--remove-supported-devices", action="store_true",
@@ -83,6 +91,10 @@ def generate_cyan(parser: argparse.ArgumentParser) -> None:
     parser.error(f"invalid minimum OS version: {args.m}")
   if args.k is not None and not os.path.isfile(args.k):
     parser.error(f"{args.k} does not exist")
+  if args.l is not None and not os.path.isfile(args.l):
+    parser.error(f"{args.l} does not exist")
+  if args.x is not None and not os.path.isfile(args.x):
+    parser.error(f"{args.x} does not exist")
   if args.f is not None:
     fake = [f for f in args.f if not os.path.exists(f)]
 
@@ -107,7 +119,7 @@ def generate_cyan(parser: argparse.ArgumentParser) -> None:
   real_args = {k: v for k, v in dict(vars(args)).items() if v}
   del real_args["output"]
 
-  for key in "fk":  # these need files
+  for key in "fkxl":  # these need files
     if key in real_args:
       real_args[key] = True
 
@@ -135,6 +147,12 @@ def generate_cyan(parser: argparse.ArgumentParser) -> None:
 
     if args.k is not None:
       zf.write(args.k, "icon.idk")
+
+    if args.l:
+      zf.write(args.l, "merge.plist")
+
+    if args.x:
+      zf.write(args.x, "new.entitlements")
 
 
 if __name__ == "__main__":

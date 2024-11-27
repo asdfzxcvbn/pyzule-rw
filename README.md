@@ -15,6 +15,7 @@ you can open an issue to request a feature :D !! also see my [recommended flags]
 - remove watch app
 - change the app icon
 - fakesign the output ipa/tipa/app
+- merge a plist into the app's existing Info.plist
 - add custom entitlements to the main executable
 - thin all binaries to arm64, it can LARGELY reduce app size sometimes!
 - remove all app extensions (or just encrypted ones!)
