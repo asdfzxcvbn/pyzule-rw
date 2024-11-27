@@ -105,7 +105,7 @@ class AppBundle:
 
   def change_icon(self, path: str, tmpdir: str) -> None:
     try:
-      from PIL import Image
+      from PIL import Image  # type: ignore
     except Exception:
       return print("[?] pillow is not installed, -k is not available")
 

@@ -67,6 +67,9 @@ def validate_inputs(args: Namespace) -> Optional[str]:
   if args.k is not None and not os.path.isfile(args.k):
     sys.exit(f"[!] {args.k} does not exist")
 
+  if args.l is not None and not os.path.isfile(args.l):
+    sys.exit(f"[!] {args.l} does not exist")
+
   if args.cyan is not None and not os.path.isfile(args.cyan):
     sys.exit(f"[!] {args.cyan} does not exist")
 

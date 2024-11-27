@@ -10,11 +10,13 @@ class Plist:
     try:
       with open(path, "rb") as f:
         self.data: dict[str, Any] = plistlib.load(f)
+
+      self.success = True
     except Exception:
       if throw:
         sys.exit(f"[!] couldn't read {path}")
-      else:
-        return None
+
+      self.success = False
 
     self.path = path
     self.app_path = app_path
@@ -44,7 +46,7 @@ class Plist:
     try:
       if all(self[key] == val for key in keys):
         return False
-      raise KeyError  # lets pretend this was always here..
+      raise KeyError
     except KeyError:
       for key in keys:
         self[key] = val
@@ -120,4 +122,19 @@ class Plist:
       print(f"[*] changed minimum version to \"{minimum}\"")
     else:
       print(f"[?] minimum version was already \"{minimum}\"")
+
+  def merge_plist(self, path: str) -> None:
+    pl = Plist(path, throw=False)
+    if not pl.success:
+      return print(f"[!] couldn't parse {path}")
+
+    changed = False
+    for k, v in pl.data.items():
+      if self.change(v, k):
+        changed = True
+
+    if not changed:
+      print("[?] no modified plist entries")
+    else:
+      print("[*] set plist keys:", ", ".join(pl.data))
 

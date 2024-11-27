@@ -66,6 +66,8 @@ def main(parser: ArgumentParser) -> None:
       app.plist.change_minimum_version(args.m)
     if args.k is not None:
       app.change_icon(args.k, tmpdir)
+    if args.l is not None:
+      app.plist.merge_plist(args.l)
     if args.x is not None:
       app.executable.merge_entitlements(args.x)
 

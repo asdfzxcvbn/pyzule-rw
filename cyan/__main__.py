@@ -51,6 +51,10 @@ def main() -> None:
     help="modify the app's icon"
   )
   parser.add_argument(
+    "-l", metavar="plist",
+    help="a plist to merge with the app's Info.plist"
+  )
+  parser.add_argument(
     "-x", metavar="entitlements",
     help="add or modify entitlements to the main binary"
   )
@@ -99,7 +103,7 @@ def main() -> None:
   )
 
   parser.add_argument(
-    "--version", action="version", version="cyan v1.4.1"
+    "--version", action="version", version="cyan v1.4.2b"
   )
 
   from cyan import logic
