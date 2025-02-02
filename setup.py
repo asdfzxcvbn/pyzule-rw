@@ -7,7 +7,7 @@ setup(
   version="1.4.3",
   description="finally, pyzule doesn't suck",
   author="zx",
-  author_email="zx@hrzn.email",
+  author_email="z@zxcvbn.fyi",
   packages=["cyan", "cyan.tbhtypes", "cgen"],
   python_requires=">=3.9",
   include_package_data=True,
