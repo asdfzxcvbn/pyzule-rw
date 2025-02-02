@@ -2,6 +2,8 @@
 
 a rewrite of [pyzule](https://github.com/asdfzxcvbn/pyzule) that doesn't (completely) suck !!
 
+wouldn't a go rewrite be really cool? (or in rust or something, adding features to this makes me realize PYTHONM FUCKING SUCKS SOMEONE PLEASE REWRITE IN LIKE ANY COMPILED AND STATICALLY TYPED LANGUAGE PLEASE!!!!!!!
+
 ## features
 
 you can open an issue to request a feature :D !! also see my [recommended flags](https://github.com/asdfzxcvbn/pyzule-rw/wiki/recommended-flags)

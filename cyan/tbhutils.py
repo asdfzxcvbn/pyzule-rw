@@ -70,8 +70,10 @@ def validate_inputs(args: Namespace) -> Optional[str]:
   if args.l is not None and not os.path.isfile(args.l):
     sys.exit(f"[!] {args.l} does not exist")
 
-  if args.cyan is not None and not os.path.isfile(args.cyan):
-    sys.exit(f"[!] {args.cyan} does not exist")
+  if args.cyan is not None:
+    for cyan in args.cyan:
+      if not os.path.isfile(cyan):
+        sys.exit(f"[!] {cyan} does not exist")
 
   if args.x is not None:
     if not os.path.isfile(args.x):
@@ -189,7 +191,7 @@ def extract_deb(deb: str, tweaks: dict[str, str], tmpdir: str) -> None:
       glob(f"{t2}/**/*.framework", recursive=True)
   ), []):  # type: ignore
     if (
-        os.path.islink(hi)  # symlinks are broken iirc
+        os.path.islink(hi)  # symlinks are broken iirc, also for security
         or hi.count(".bundle") > 1  # prevent sub-bundle detection (rip)
         or hi.count(".framework") > 1
     ):
@@ -232,34 +234,37 @@ def make_ipa(tmpdir: str, output: str, level: int) -> None:
     print(f"[?] was unable to zip {weird} file(s) due to timestamps")
 
 
-def parse_cyan(args: dict[str, Any], tmpdir: str) -> None:
-  print("[*] parsing .cyan file..")
-  with zipfile.ZipFile(args["cyan"]) as zf:
-    DOT_PATH = f"{tmpdir}/cyan"
-    os.mkdir(DOT_PATH)
+def parse_cyans(args: dict[str, Any], tmpdir: str) -> None:
+  for ind, cyan in enumerate(args["cyan"]):
+    print(f"[*] parsing {os.path.basename(cyan)} ..")
 
-    with zf.open("config.json") as f:
-      config = json.load(f)
+    with zipfile.ZipFile(cyan) as zf:
+      DOT_PATH = f"{tmpdir}/cyan-{ind}"
+      os.mkdir(DOT_PATH)
 
-    if "f" in config:
-      NAMES = [n for n in zf.namelist() if n.startswith("inject/")]
-      zf.extractall(DOT_PATH, NAMES)
+      with zf.open("config.json") as f:
+        config = json.load(f)
 
-      # ensure not None
-      args["f"] = args["f"] if args["f"] is not None else {}
-      for e in os.scandir(f"{DOT_PATH}/inject"):
-        args["f"][e.name] = e.path
-      del config["f"]
-    if "k" in config:
-      args["k"] = zf.extract("icon.idk", DOT_PATH)
-      del config["k"]
-    if "l" in config:
-      args["l"] = zf.extract("merge.plist", DOT_PATH)
-      del config["l"]
-    if "x" in config:
-      args["x"] = zf.extract("new.entitlements", DOT_PATH)
-      del config["x"]
+      if "f" in config:
+        NAMES = [n for n in zf.namelist() if n.startswith("inject/")]
+        zf.extractall(DOT_PATH, NAMES)
 
-    for k, v in config.items():
-      args[k] = v
+        # ensure not None
+        args["f"] = args["f"] if args["f"] is not None else {}
+        for e in os.scandir(f"{DOT_PATH}/inject"):
+          args["f"][e.name] = e.path
+        del config["f"]
+      if "k" in config:
+        args["k"] = zf.extract("icon.idk", DOT_PATH)
+        del config["k"]
+      if "l" in config:
+        args["l"] = zf.extract("merge.plist", DOT_PATH)
+        del config["l"]
+      if "x" in config:
+        args["x"] = zf.extract("new.entitlements", DOT_PATH)
+        del config["x"]
+
+      # the rest of the config (not the ones above, we `del` them)
+      for k, v in config.items():
+        args[k] = v
 

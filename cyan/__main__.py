@@ -21,15 +21,16 @@ def main() -> None:
     "-o", "--output", metavar="output",
     help="if unspecified, overwrites input"
   )
-  parser.add_argument(
-    "-z", "--cyan", metavar="cyan",
-    help="the .cyan file to use"
-  )
 
+  parser.add_argument(
+    "-z", "--cyan", metavar="cyan", nargs="+",
+    help="the .cyan file(s) to use"
+  )
   parser.add_argument(
     "-f", metavar="file", nargs="+",
     help="a tweak to inject/item to be added to the bundle"
   )
+
   parser.add_argument(
     "-n", metavar="name",
     help="modify the app's name"

@@ -45,7 +45,7 @@ def main(parser: ArgumentParser) -> None:
 
     if args.cyan is not None:
       changing = vars(args)
-      tbhutils.parse_cyan(changing, tmpdir)
+      tbhutils.parse_cyans(changing, tmpdir)
 
     # this goes before injection,
     # since user might inject their own extensions

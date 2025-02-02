@@ -61,6 +61,9 @@ class MainExecutable(Executable):
 
     # inject/fix user things
     for bn, path in tweaks.items():
+      if os.path.islink(path):
+        continue  # symlinks can potentially have some security implications
+
       if bn.endswith(".appex"):
         fpath = f"{PLUGINS_DIR}/{bn}"
         existed = tbhutils.delete_if_exists(fpath, bn)
@@ -94,6 +97,8 @@ class MainExecutable(Executable):
 
     # orion has a *weak* dependency to substrate,
     # but will still crash without it. nice !!!!!!!!!!!
+    ## edit: actually, maybe this is in case someone uses Internal backend?
+    ## someone test it pls!!!
     if "orion." in needed:
       needed.add("substrate.")
 
