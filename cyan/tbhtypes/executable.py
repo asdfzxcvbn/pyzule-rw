@@ -13,7 +13,8 @@ class Executable:
   otool = f"{specific}/otool"
   idylib = f"{specific}/insert_dylib"
 
-  starters = ("\t/Library/", "\t@rpath", "\t@executable_path")
+  # adding /usr/lib/ now, idk why i didnt before. lets hope nothing breaks
+  starters = ("\t/Library/", "\t/usr/lib/", "\t@rpath", "\t@executable_path")
 
   # substrate could show up as
   # CydiaSubstrate.framework, libsubstrate.dylib, EVEN CydiaSubstrate.dylib
