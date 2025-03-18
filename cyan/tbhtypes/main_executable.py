@@ -137,9 +137,12 @@ class MainExecutable(Executable):
       print("[!] failed to merge new entitlements, are they valid?")
 
   def sign_with_entitlements(self, entitlements: str) -> bool:
-    return subprocess.run(
-      [self.ldid, f"-S{entitlements}", "-M", "-Cadhoc", self.path]
-    ).returncode == 0
+    return subprocess.run([
+      self.ldid,
+      f"-S{entitlements}", "-M", "-Cadhoc",
+      f"-Q{self.install_dir}/extras/zero.requirements",
+      self.path
+    ]).returncode == 0
 
   def lief_inject(self, cmd: str) -> None:
     if self.inj is None:  # type: ignore

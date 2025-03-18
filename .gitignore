@@ -6,3 +6,6 @@ build/
 *.cyan
 .DS_Store
 
+*.ipa
+*.app/
+
